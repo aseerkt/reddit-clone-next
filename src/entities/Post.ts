@@ -1,4 +1,4 @@
-import { Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import {
   BeforeInsert,
   Column,
@@ -6,13 +6,16 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { BaseColumns } from './BaseColums';
 import { User } from './User';
 import { Sub } from './Sub';
 import { makeId, slugify } from '../utils/postHelper';
 import { IsNotEmpty } from 'class-validator';
+import { Comment } from './Comment';
 
+@ObjectType()
 @Entity('posts')
 export class Post extends BaseColumns {
   constructor(post: Partial<Post>) {
@@ -56,6 +59,9 @@ export class Post extends BaseColumns {
   @ManyToOne(() => Sub, (sub) => sub.posts)
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
   sub: Sub;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   // Methods
   @BeforeInsert()

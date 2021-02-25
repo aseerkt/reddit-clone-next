@@ -8,6 +8,8 @@ import { buildSchema } from 'type-graphql';
 import { PORT } from './constants';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { createUserLoader } from './utils/createUserLoader';
+import { createSubLoader } from './utils/createSubLoader';
 
 const main = async () => {
   await createConnection();
@@ -39,7 +41,12 @@ const main = async () => {
         connection.variables = newVariables;
         console.log('connection variables', connection.variables);
       }
-      return { req, res };
+      return {
+        req,
+        res,
+        userLoader: createUserLoader(),
+        subLoader: createSubLoader(),
+      };
     },
   });
 

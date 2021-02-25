@@ -3,11 +3,16 @@ import {
   ArgsType,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
+  Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { Post } from '../entities/Post';
+import { Sub } from '../entities/Sub';
+import { User } from '../entities/User';
 import { isAuth } from '../middlewares/isAuth';
 import { DefaultResponse, MyContext } from '../types';
 
@@ -21,8 +26,37 @@ class CreatePostArgs {
   subName: string;
 }
 
-@Resolver()
+@ArgsType()
+export class FetchPostArgs {
+  @Field()
+  identifier: string;
+  @Field()
+  slug: string;
+}
+
+@Resolver(Post)
 export class PostResolver {
+  @FieldResolver(() => User)
+  creator(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
+    return userLoader.load(post.username);
+  }
+
+  @FieldResolver(() => Sub)
+  sub(@Root() post: Post, @Ctx() { subLoader }: MyContext) {
+    return subLoader.load(post.subName);
+  }
+
+  @Query(() => [Post])
+  getPosts(): Promise<Post[]> {
+    return Post.find({ order: { createdAt: 'DESC' } });
+  }
+
+  @Query(() => Post, { nullable: true })
+  getPost(@Args() { identifier, slug }: FetchPostArgs) {
+    return Post.findOne({ slug, identifier });
+  }
+
+  // Create post
   @Mutation(() => DefaultResponse)
   @UseMiddleware(isAuth)
   async createPost(

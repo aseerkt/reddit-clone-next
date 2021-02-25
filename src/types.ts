@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Field, ObjectType } from 'type-graphql';
 import { User } from './entities/User';
+import { createSubLoader } from './utils/createSubLoader';
+import { createUserLoader } from './utils/createUserLoader';
 
 @ObjectType()
 export class FieldError {
@@ -21,4 +23,6 @@ export class DefaultResponse {
 export type MyContext = {
   req: Request;
   res: Response & { locals: { user: User } };
+  userLoader: ReturnType<typeof createUserLoader>;
+  subLoader: ReturnType<typeof createSubLoader>;
 };

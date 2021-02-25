@@ -8,3 +8,4 @@ temp/
 .env
 .env.example
 dist/
+src/migrations/

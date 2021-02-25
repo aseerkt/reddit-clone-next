@@ -8,6 +8,7 @@ import {
 
 @ObjectType()
 export abstract class BaseColumns extends BaseEntity {
+  @Field()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
