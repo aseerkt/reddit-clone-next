@@ -20,24 +20,39 @@ const apollo_server_express_1 = require("apollo-server-express");
 const express_1 = __importDefault(require("express"));
 const type_graphql_1 = require("type-graphql");
 const constants_1 = require("./constants");
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield typeorm_1.createConnection();
-        console.log('Connected to Database'.yellow.bold);
-    }
-    catch (err) {
-        throw err;
-    }
+    yield typeorm_1.createConnection();
     const app = express_1.default();
-    app.get('/', (_req, res) => res.send('Reddit Clone Backend API'));
+    app.use(cors_1.default({
+        origin: 'http://localhost:3000',
+        credentials: true,
+    }));
+    app.use(cookie_parser_1.default());
+    app.get('/', (_, res) => res.send('Reddit Clone Backend API'));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
             resolvers: [__dirname + '/resolvers/**/*.{ts,js}'],
         }),
+        context: ({ req, res, connection }) => {
+            const exceptions = ['password'];
+            if (connection === null || connection === void 0 ? void 0 : connection.variables) {
+                let newVariables = {};
+                Object.entries(connection.variables).forEach(([key, value]) => {
+                    if (exceptions.includes(key) && typeof value === 'string') {
+                        newVariables[key] = value.trim();
+                    }
+                });
+                connection.variables = newVariables;
+                console.log('connection variables', connection.variables);
+            }
+            return { req, res };
+        },
     });
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.listen(constants_1.PORT, () => {
-        console.log(`GraphQL Server is running on http://localhost:${constants_1.PORT}${apolloServer.graphqlPath}`
+        console.log(`GraphQL API is running on http://localhost:${constants_1.PORT}${apolloServer.graphqlPath}`
             .blue.bold);
     });
 });

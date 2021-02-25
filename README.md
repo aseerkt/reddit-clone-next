@@ -1,7 +1,8 @@
-# Awesome Project Build with TypeORM
+# Reddit Clone | NextJS, GraphQL, Apollo, TypeORM
 
-Steps to run this project:
+> Reddit Clone with minimalist feature
 
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+### Credits
+
+- [benawad](https://github.com/benawad)
+- [hidjou](https://github.com/hidjou)

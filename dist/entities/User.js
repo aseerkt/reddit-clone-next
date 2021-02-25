@@ -26,7 +26,9 @@ const class_validator_1 = require("class-validator");
 const type_graphql_1 = require("type-graphql");
 const argon2_1 = __importDefault(require("argon2"));
 const typeorm_1 = require("typeorm");
-let User = class User extends typeorm_1.BaseEntity {
+const BaseColums_1 = require("./BaseColums");
+const Post_1 = require("./Post");
+let User = class User extends BaseColums_1.BaseColumns {
     constructor(user) {
         super();
         Object.assign(this, user);
@@ -36,25 +38,25 @@ let User = class User extends typeorm_1.BaseEntity {
             this.password = yield argon2_1.default.hash(this.password);
         });
     }
+    verifyPassword(password) {
+        return argon2_1.default.verify(this.password, password);
+    }
 };
 __decorate([
     type_graphql_1.Field(),
-    typeorm_1.PrimaryGeneratedColumn('uuid'),
-    __metadata("design:type", String)
-], User.prototype, "id", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
     class_validator_1.IsEmail(undefined, { message: 'Invalid email' }),
+    class_validator_1.IsNotEmpty({ message: 'Email is required' }),
     typeorm_1.Column({ unique: true }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
     type_graphql_1.Field(),
+    typeorm_1.Index(),
     class_validator_1.IsAlphanumeric(undefined, { message: 'Username must be alphanumeric' }),
     class_validator_1.MinLength(3, {
         message: 'Username must be $constraint1 or more characters long',
     }),
+    class_validator_1.IsNotEmpty({ message: 'Username is required' }),
     typeorm_1.Column({ unique: true }),
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
@@ -62,25 +64,20 @@ __decorate([
     class_validator_1.MinLength(6, {
         message: 'Password must be $constraint1 or more characters long',
     }),
+    class_validator_1.IsNotEmpty({ message: 'Password is required' }),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
-__decorate([
-    type_graphql_1.Field(() => Date),
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], User.prototype, "createdAt", void 0);
-__decorate([
-    type_graphql_1.Field(() => Date),
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], User.prototype, "updatedAt", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], User.prototype, "hashPassword", null);
+__decorate([
+    typeorm_1.OneToMany(() => Post_1.Post, (post) => post.creator),
+    __metadata("design:type", Array)
+], User.prototype, "posts", void 0);
 User = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity('users'),

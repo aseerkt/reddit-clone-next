@@ -6,30 +6,48 @@ import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import { buildSchema } from 'type-graphql';
 import { PORT } from './constants';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 const main = async () => {
-  try {
-    await createConnection();
-    console.log('Connected to Database'.yellow.bold);
-  } catch (err) {
-    throw err;
-  }
+  await createConnection();
 
   const app = express();
 
-  app.get('/', (_req, res) => res.send('Reddit Clone Backend API'));
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
+  app.use(cookieParser());
+  app.get('/', (_, res) => res.send('Reddit Clone Backend API'));
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [__dirname + '/resolvers/**/*.{ts,js}'],
     }),
+    context: ({ req, res, connection }) => {
+      const exceptions = ['password'];
+      if (connection?.variables) {
+        let newVariables: Record<string, any> = {};
+        Object.entries(connection.variables).forEach(([key, value]) => {
+          if (exceptions.includes(key) && typeof value === 'string') {
+            newVariables[key] = value.trim();
+          }
+        });
+        connection.variables = newVariables;
+        console.log('connection variables', connection.variables);
+      }
+      return { req, res };
+    },
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => {
     console.log(
-      `GraphQL Server is running on http://localhost:${PORT}${apolloServer.graphqlPath}`
+      `GraphQL API is running on http://localhost:${PORT}${apolloServer.graphqlPath}`
         .blue.bold
     );
   });

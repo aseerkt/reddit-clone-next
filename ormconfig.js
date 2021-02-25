@@ -5,7 +5,7 @@ module.exports = {
   username: 'postgres',
   password: 'postgres',
   database: 'cl-reddit',
-  synchronize: true,
+  synchronize: false,
   logging: true,
   entities: ['dist/entities/**/*.js'],
   migrations: ['dist/migrations/**/*.js'],
