@@ -54,6 +54,7 @@ export type Post = {
   slug: Scalars['String'];
   title: Scalars['String'];
   body: Scalars['String'];
+  url: Scalars['String'];
   username: Scalars['String'];
   subName: Scalars['String'];
   creator: User;
@@ -152,7 +153,7 @@ export type ErrorFieldFragment = (
 
 export type PostFieldFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'slug' | 'identifier' | 'title' | 'body' | 'username' | 'subName' | 'createdAt' | 'updatedAt'>
+  & Pick<Post, 'id' | 'slug' | 'identifier' | 'title' | 'body' | 'username' | 'subName' | 'url' | 'createdAt' | 'updatedAt'>
 );
 
 export type RegularDefaultResponseFragment = (
@@ -289,12 +290,14 @@ export type MeQuery = (
 
 export const PostFieldFragmentDoc = gql`
     fragment PostField on Post {
+  id
   slug
   identifier
   title
   body
   username
   subName
+  url
   createdAt
   updatedAt
 }

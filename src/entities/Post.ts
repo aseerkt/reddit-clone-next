@@ -1,5 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
 import {
+  AfterLoad,
   BeforeInsert,
   Column,
   Entity,
@@ -42,6 +43,11 @@ export class Post extends BaseColumns {
   @Column({ nullable: true, type: 'text' })
   body: string;
 
+  //  Virtual fields
+
+  @Field()
+  protected url: string;
+
   // Relations
 
   @Field()
@@ -68,5 +74,10 @@ export class Post extends BaseColumns {
   makeSlug() {
     this.identifier = makeId();
     this.slug = slugify(this.title);
+  }
+
+  @AfterLoad()
+  createFields() {
+    this.url = `/r/${this.subName}/${this.identifier}/${this.slug}`;
   }
 }

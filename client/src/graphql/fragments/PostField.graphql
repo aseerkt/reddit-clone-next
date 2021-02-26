@@ -1,10 +1,12 @@
 fragment PostField on Post {
+  id
   slug
   identifier
   title
   body
   username
   subName
+  url
   createdAt
   updatedAt
 }

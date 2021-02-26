@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
         {
           'bg-blue-500 border-blue-500 text-white hover:bg-blue-400 hover:border-blue-400':
             variant === 'contained',
-          'bg-transparent border-blue-500 text-blue-500 hover:bg-blue-10s':
+          'bg-transparent border-blue-500 text-blue-500 hover:bg-gray-50':
             variant === 'outlined',
           'w-full': fullWidth,
         }
