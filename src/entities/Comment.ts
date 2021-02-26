@@ -1,8 +1,9 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseColumns } from './BaseColums';
 import { Post } from './Post';
 import { User } from './User';
+import { Vote } from './Vote';
 
 @ObjectType()
 @Entity('comments')
@@ -28,4 +29,7 @@ export class Comment extends BaseColumns {
 
   @ManyToOne(() => Post, (post) => post.comments)
   post: Post;
+
+  @OneToMany(() => Vote, (vote) => vote.comment)
+  votes: Vote[];
 }

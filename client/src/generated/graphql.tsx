@@ -36,6 +36,15 @@ export type Sub = {
   username: Scalars['String'];
 };
 
+export type Vote = {
+  __typename?: 'Vote';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  value: Scalars['Int'];
+  username: Scalars['String'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   id: Scalars['String'];
@@ -55,10 +64,14 @@ export type Post = {
   title: Scalars['String'];
   body: Scalars['String'];
   url: Scalars['String'];
+  commentCount: Scalars['Int'];
+  voteScore: Scalars['Int'];
+  userVote?: Maybe<Scalars['Int']>;
   username: Scalars['String'];
   subName: Scalars['String'];
   creator: User;
   sub: Sub;
+  comments: Array<Comment>;
 };
 
 export type User = {
@@ -110,6 +123,8 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  votePost: Scalars['Boolean'];
+  voteComment: Scalars['Boolean'];
 };
 
 
@@ -146,6 +161,19 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationVotePostArgs = {
+  value: Scalars['Int'];
+  slug?: Maybe<Scalars['String']>;
+  identifier?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationVoteCommentArgs = {
+  value: Scalars['Int'];
+  commentId: Scalars['String'];
+};
+
 export type ErrorFieldFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'path' | 'message'>
@@ -153,7 +181,7 @@ export type ErrorFieldFragment = (
 
 export type PostFieldFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'slug' | 'identifier' | 'title' | 'body' | 'username' | 'subName' | 'url' | 'createdAt' | 'updatedAt'>
+  & Pick<Post, 'id' | 'slug' | 'identifier' | 'title' | 'body' | 'username' | 'subName' | 'url' | 'commentCount' | 'voteScore' | 'userVote' | 'createdAt' | 'updatedAt'>
 );
 
 export type RegularDefaultResponseFragment = (
@@ -298,6 +326,9 @@ export const PostFieldFragmentDoc = gql`
   username
   subName
   url
+  commentCount
+  voteScore
+  userVote
   createdAt
   updatedAt
 }

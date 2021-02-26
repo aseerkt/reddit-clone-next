@@ -7,6 +7,9 @@ fragment PostField on Post {
   username
   subName
   url
+  commentCount
+  voteScore
+  userVote
   createdAt
   updatedAt
 }

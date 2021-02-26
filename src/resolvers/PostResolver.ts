@@ -4,16 +4,20 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
   Root,
   UseMiddleware,
 } from 'type-graphql';
+import { Comment } from '../entities/Comment';
 import { Post } from '../entities/Post';
 import { Sub } from '../entities/Sub';
 import { User } from '../entities/User';
+import { Vote } from '../entities/Vote';
 import { isAuth } from '../middlewares/isAuth';
+import { isUser } from '../middlewares/isUser';
 import { DefaultResponse, MyContext } from '../types';
 
 @ArgsType()
@@ -36,14 +40,50 @@ export class FetchPostArgs {
 
 @Resolver(Post)
 export class PostResolver {
+  // Creator
   @FieldResolver(() => User)
   creator(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
     return userLoader.load(post.username);
   }
 
+  //Sub
   @FieldResolver(() => Sub)
   sub(@Root() post: Post, @Ctx() { subLoader }: MyContext) {
     return subLoader.load(post.subName);
+  }
+
+  //Comments
+  @FieldResolver(() => [Comment])
+  comments(@Root() post: Post) {
+    return Comment.find({ post });
+  }
+
+  //CommentCount
+
+  @FieldResolver(() => Int)
+  commentCount(@Root() post: Post) {
+    return Comment.count({ post });
+  }
+
+  //VoteScore
+  @FieldResolver(() => Int)
+  async voteScore(@Root() post: Post) {
+    const votes = await Vote.find({ post });
+    return votes.reduce((prev, vote) => {
+      prev += vote.value;
+      return prev;
+    }, 0);
+  }
+
+  //UserVote
+  @FieldResolver(() => Int)
+  @UseMiddleware(isUser)
+  async userVote(@Root() post: Post, @Ctx() { res }: MyContext) {
+    const vote = await Vote.findOne({
+      select: ['value'],
+      where: { post, user: res.locals.user },
+    });
+    return vote ? vote.value : null;
   }
 
   @Query(() => [Post])

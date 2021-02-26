@@ -1,4 +1,4 @@
-import { Field, ObjectType } from 'type-graphql';
+import { Field, Int, ObjectType } from 'type-graphql';
 import {
   AfterLoad,
   BeforeInsert,
@@ -15,6 +15,7 @@ import { Sub } from './Sub';
 import { makeId, slugify } from '../utils/postHelper';
 import { IsNotEmpty } from 'class-validator';
 import { Comment } from './Comment';
+import { Vote } from './Vote';
 
 @ObjectType()
 @Entity('posts')
@@ -48,6 +49,15 @@ export class Post extends BaseColumns {
   @Field()
   protected url: string;
 
+  @Field(() => Int)
+  commentCount: number;
+
+  @Field(() => Int)
+  voteScore: number;
+
+  @Field(() => Int, { nullable: true })
+  userVote: number | null;
+
   // Relations
 
   @Field()
@@ -68,6 +78,9 @@ export class Post extends BaseColumns {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
+
+  @OneToMany(() => Vote, (vote) => vote.post)
+  votes: Vote[];
 
   // Methods
   @BeforeInsert()
