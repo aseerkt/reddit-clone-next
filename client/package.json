@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.11",
+    "@svgr/webpack": "^5.5.0",
     "autoprefixer": "^10.2.4",
     "formik": "^2.2.6",
     "graphql": "^15.5.0",

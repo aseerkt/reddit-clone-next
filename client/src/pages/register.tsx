@@ -46,7 +46,7 @@ function Register() {
               type='password'
               placeholder='PASSWORD'
             />
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSubmitting} type='submit' fullWidth>
               sign Up
             </Button>
           </Form>

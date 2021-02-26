@@ -3,12 +3,20 @@ import FormWrapper from '../components/FormWrapper';
 import InputField from '../components/InputField';
 import { Formik, Form } from 'formik';
 import { useRouter } from 'next/dist/client/router';
-import { useLoginMutation } from '../generated/graphql';
+import { MeDocument, useLoginMutation } from '../generated/graphql';
 import Button from '../components/Button';
 
 const Login = () => {
   const router = useRouter();
-  const [login] = useLoginMutation();
+  const [login] = useLoginMutation({
+    update: (cache, { data }) => {
+      const user = data.login.user;
+      if (user) {
+        cache.writeQuery({ query: MeDocument, data: { me: user } });
+        router.push('/');
+      }
+    },
+  });
   return (
     <FormWrapper title='Log In'>
       <p className='mb-10 text-xs'>
@@ -52,7 +60,7 @@ const Login = () => {
               placeholder='PASSWORD'
             />
 
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSubmitting} type='submit' fullWidth>
               log in
             </Button>
           </Form>
