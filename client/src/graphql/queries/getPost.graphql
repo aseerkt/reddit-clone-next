@@ -1,0 +1,5 @@
+query GetPost($identifier: String!, $slug: String!) {
+  getPost(identifier: $identifier, slug: $slug) {
+    ...PostField
+  }
+}

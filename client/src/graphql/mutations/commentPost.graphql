@@ -1,0 +1,3 @@
+mutation CommentPost($text: String!, $identifier: String!, $slug: String!) {
+  commentPost(text: $text, identifier: $identifier, slug: $slug)
+}

@@ -1,4 +1,4 @@
-import { validate } from 'class-validator';
+import { isEmpty, validate } from 'class-validator';
 import {
   Arg,
   Args,
@@ -63,10 +63,10 @@ export class UserResolver {
       const usernameUser = await User.findOne({ username });
 
       if (emailUser)
-        errors.push({ path: email, message: 'Email is already taken' });
+        errors.push({ path: 'email', message: 'Email is already taken' });
       if (usernameUser)
         errors.push({
-          path: username,
+          path: 'username',
           message: 'Username is already taken',
         });
 
@@ -89,7 +89,18 @@ export class UserResolver {
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
     @Ctx() { res }: MyContext
-  ) {
+  ): Promise<UserResponse> {
+    // Check for empty fields
+    let errors: FieldError[] = [];
+    if (isEmpty(usernameOrEmail))
+      errors.push({
+        path: 'usernameOrEmail',
+        message: 'Username or Email is required',
+      });
+    if (isEmpty(password))
+      errors.push({ path: 'password', message: 'Password is required' });
+    if (errors.length > 0) return { errors };
+
     try {
       const user = await User.findOne(
         usernameOrEmail.includes('@')

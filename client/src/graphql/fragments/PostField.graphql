@@ -1,0 +1,10 @@
+fragment PostField on Post {
+  slug
+  identifier
+  title
+  body
+  username
+  subName
+  createdAt
+  updatedAt
+}

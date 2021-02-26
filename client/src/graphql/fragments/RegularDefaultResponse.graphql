@@ -1,0 +1,6 @@
+fragment RegularDefaultResponse on DefaultResponse {
+  ok
+  errors {
+    ...ErrorField
+  }
+}

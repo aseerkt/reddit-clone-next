@@ -1,0 +1,4 @@
+fragment ErrorField on FieldError {
+  path
+  message
+}

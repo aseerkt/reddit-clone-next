@@ -1,0 +1,5 @@
+mutation CreatePost($title: String!, $body: String, $subName: String!) {
+  createPost(title: $title, body: $body, subName: $subName) {
+    ...RegularDefaultResponse
+  }
+}

@@ -1,0 +1,5 @@
+mutation CreateSub($name: String!, $title: String!, $description: String) {
+  createSub(name: $name, title: $title, description: $description) {
+    ...RegularDefaultResponse
+  }
+}
