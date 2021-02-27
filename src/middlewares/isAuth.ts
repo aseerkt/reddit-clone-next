@@ -1,17 +1,12 @@
 import { AuthenticationError } from 'apollo-server-express';
 import { MiddlewareFn } from 'type-graphql';
-import { COOKIE_NAME } from '../constants';
-import { User } from '../entities/User';
 import { MyContext } from '../types';
-import { verifyToken } from '../utils/tokenHandler';
+import { getUserFromCookie } from '../utils/cookieHandler';
 
 export const isAuth: MiddlewareFn<MyContext> = async ({ context }, next) => {
   // console.log(context);
   try {
-    const token = context.req.cookies[COOKIE_NAME];
-    const payload: any = verifyToken(token);
-    const username = payload.username;
-    const user = await User.findOne({ username });
+    const user = await getUserFromCookie(context.req);
     if (!user) {
       throw new AuthenticationError('Not Authenticated');
     } else {

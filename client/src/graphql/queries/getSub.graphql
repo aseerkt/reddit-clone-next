@@ -1,0 +1,5 @@
+query GetSub($subName: String!) {
+  getSub(subName: $subName) {
+    ...RegularSub
+  }
+}

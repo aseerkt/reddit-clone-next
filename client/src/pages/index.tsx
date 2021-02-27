@@ -7,7 +7,7 @@ export default function Home() {
   const { data, loading } = useGetPostsQuery();
 
   return (
-    <div className='pt-12'>
+    <>
       <Head>
         <title>reddit: the fake page of the internet</title>
       </Head>
@@ -27,6 +27,6 @@ export default function Home() {
           <p>a</p>
         </div> */}
       </div>
-    </div>
+    </>
   );
 }

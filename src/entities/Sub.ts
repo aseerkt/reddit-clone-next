@@ -1,6 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 import { Field, ObjectType } from 'type-graphql';
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -55,4 +56,20 @@ export class Sub extends BaseColumns {
 
   @OneToMany(() => Post, (post) => post.sub)
   posts: Post[];
+
+  // VirtualFields
+  @Field()
+  protected imageUrl: string;
+  @Field(() => String, { nullable: true })
+  protected bannerUrl?: string | null;
+
+  @AfterLoad()
+  createUrls() {
+    this.bannerUrl = this.bannerUrn
+      ? `${process.env.APP_URL}/${this.bannerUrn}`
+      : null;
+    this.imageUrl = this.imageUrn
+      ? `${process.env.APP_URL}/${this.imageUrn}`
+      : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+  }
 }

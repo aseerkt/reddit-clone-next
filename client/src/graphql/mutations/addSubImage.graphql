@@ -1,0 +1,6 @@
+mutation AddSubImage($file: Upload!, $type: String!, $subName: String!) {
+  addSubImage(file: $file, type: $type, subName: $subName) {
+    type
+    Urn
+  }
+}

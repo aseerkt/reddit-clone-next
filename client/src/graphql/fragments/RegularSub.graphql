@@ -1,0 +1,12 @@
+fragment RegularSub on Sub {
+  id
+  title
+  name
+  description
+  username
+  imageUrl
+  bannerUrl
+  posts {
+    ...PostField
+  }
+}

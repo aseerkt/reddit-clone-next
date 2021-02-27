@@ -1,15 +1,12 @@
 import '../styles/globals.css';
+import '../styles/icons.css';
 import { AppProps } from 'next/app';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 
 import Navbar from '../components/Navbar';
 import { useRouter } from 'next/dist/client/router';
-
-const apolloClient = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
-  cache: new InMemoryCache(),
-  credentials: 'include',
-});
+import { createApolloClient } from '../utils/createApolloClient';
+import useIsAuth from '../components/useIsAuth';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
@@ -17,9 +14,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   const isInAuthRoute = authRoutes.includes(pathname);
 
   return (
-    <ApolloProvider client={apolloClient}>
+    <ApolloProvider client={createApolloClient()}>
       {!isInAuthRoute && <Navbar />}
-      <Component {...pageProps} />
+      <div className={isInAuthRoute ? '' : 'pt-12'}>
+        <Component {...pageProps} />
+      </div>
     </ApolloProvider>
   );
 }

@@ -3,14 +3,15 @@ import React from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Post } from '../generated/graphql';
+import VoteSection from './VoteSection';
 
 dayjs.extend(relativeTime);
 
 const PostCard: React.FC<{ post: Post }> = ({
   post: {
+    id,
     title,
     body,
-    id,
     url,
     subName,
     createdAt,
@@ -23,7 +24,9 @@ const PostCard: React.FC<{ post: Post }> = ({
   return (
     <div className='flex mb-4 overflow-hidden bg-white rounded'>
       {/* Vote Section */}
-      <div className='w-10 text-center bg-gray-200 '>{voteScore}</div>
+      <div className='w-10 py-3 text-center bg-gray-200 '>
+        <VoteSection postId={id} userVote={userVote} voteScore={voteScore} />
+      </div>
       <div className='w-full p-2'>
         <div className='flex items-center'>
           <Link href={`/r/${subName}`}>

@@ -1,16 +1,10 @@
 import { MiddlewareFn } from 'type-graphql';
-import { COOKIE_NAME } from '../constants';
-import { User } from '../entities/User';
 import { MyContext } from '../types';
-import { verifyToken } from '../utils/tokenHandler';
+import { getUserFromCookie } from '../utils/cookieHandler';
 
 export const isUser: MiddlewareFn<MyContext> = async ({ context }, next) => {
   try {
-    const token = context.req.cookies[COOKIE_NAME];
-    // console.log(token);
-    const payload: any = verifyToken(token);
-    const username = payload.username;
-    const user = await User.findOne({ username });
+    const user = await getUserFromCookie(context.req);
     if (user) {
       context.res.locals.user = user;
     }

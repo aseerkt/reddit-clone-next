@@ -1,41 +1,22 @@
-import {
-  Arg,
-  Args,
-  ArgsType,
-  Ctx,
-  Field,
-  Int,
-  Mutation,
-  Resolver,
-  UseMiddleware,
-} from 'type-graphql';
+import { Arg, Ctx, Int, Mutation, Resolver, UseMiddleware } from 'type-graphql';
 import { Comment } from '../entities/Comment';
 import { Post } from '../entities/Post';
 import { Vote } from '../entities/Vote';
 import { isAuth } from '../middlewares/isAuth';
 import { MyContext } from '../types';
 
-@ArgsType()
-class VotePostArgs {
-  @Field(() => Int)
-  value: 1 | -1;
-  @Field({ nullable: true })
-  slug?: string;
-  @Field({ nullable: true })
-  identifier?: string;
-}
-
 @Resolver()
 export class VoteResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async votePost(
-    @Args() { slug, identifier, value }: VotePostArgs,
+    @Arg('postId') postId: string,
+    @Arg('value', () => Int) value: 1 | -1,
     @Ctx() { res }: MyContext
   ): Promise<boolean> {
     if (![-1, 1].includes(value)) return false;
     const user = res.locals.user;
-    const post = await Post.findOne({ slug, identifier });
+    const post = await Post.findOne(postId);
     if (!post) return false;
     const vote = await Vote.findOne({ post, user });
     if (!vote) {

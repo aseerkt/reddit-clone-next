@@ -4,6 +4,8 @@
    "description": "Reddit Clone Backend Server Code",
    "devDependencies": {
       "@types/cookie-parser": "^1.4.2",
+      "@types/faker": "^5.1.7",
+      "@types/graphql-upload": "^8.0.4",
       "@types/jsonwebtoken": "^8.5.0",
       "@types/node": "^14.14.28",
       "concurrently": "^5.3.0",
@@ -21,11 +23,17 @@
       "dotenv-safe": "^8.2.0",
       "express": "^4.17.1",
       "graphql": "^15.5.0",
+      "graphql-upload": "^11.0.0",
       "jsonwebtoken": "^8.5.1",
       "pg": "^8.5.1",
       "reflect-metadata": "^0.1.13",
       "type-graphql": "^1.1.1",
-      "typeorm": "0.2.31"
+      "typeorm": "0.2.31",
+      "typeorm-seeding": "^1.6.1"
+   },
+   "resolutions": {
+      "graphql-upload": "11.0.0",
+      "fs-capacitor": "6.2.0"
    },
    "scripts": {
       "watch": "tsc -w",
@@ -33,6 +41,7 @@
       "server": "nodemon dist/index.js",
       "dev": "concurrently \"tsc -w\" \"yarn server\" ",
       "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+      "seed": "tsc && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
       "start-ts-node": "ts-node src/index.ts",
       "gen-env": "npx gen-env-types .env -o src/env.d.ts -e ."
    },

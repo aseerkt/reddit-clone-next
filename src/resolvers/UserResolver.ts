@@ -17,7 +17,6 @@ import { setTokenToCookie } from '../utils/cookieHandler';
 import { extractErrors } from '../utils/extractErrors';
 import { createToken } from '../utils/tokenHandler';
 import { isUser } from '../middlewares/isUser';
-import { isAuth } from '../middlewares/isAuth';
 import { COOKIE_NAME } from '../constants';
 
 @ArgsType()
@@ -127,17 +126,9 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseMiddleware(isAuth)
-  logout(@Ctx() { res }: MyContext) {
-    return new Promise((resolve) => {
-      res.clearCookie(COOKIE_NAME, (err: any) => {
-        if (err) {
-          console.log(err);
-          resolve(false);
-        }
-        res.locals.user = null as any;
-        resolve(true);
-      });
-    });
+  logout(@Ctx() { res }: MyContext): boolean {
+    res.clearCookie(COOKIE_NAME);
+    res.locals.user = null as any;
+    return true;
   }
 }

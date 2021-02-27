@@ -13,6 +13,8 @@ export type Scalars = {
   Float: number;
   /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
   DateTime: any;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type BaseColumns = {
@@ -34,6 +36,9 @@ export type Sub = {
   imageUrn?: Maybe<Scalars['String']>;
   bannerUrn?: Maybe<Scalars['String']>;
   username: Scalars['String'];
+  imageUrl: Scalars['String'];
+  bannerUrl?: Maybe<Scalars['String']>;
+  posts: Array<Post>;
 };
 
 export type Vote = {
@@ -95,6 +100,12 @@ export type DefaultResponse = {
   errors?: Maybe<Array<FieldError>>;
 };
 
+export type AddSubImageResponse = {
+  __typename?: 'AddSubImageResponse';
+  type: Scalars['String'];
+  Urn: Scalars['String'];
+};
+
 export type UserResponse = {
   __typename?: 'UserResponse';
   user?: Maybe<User>;
@@ -105,6 +116,7 @@ export type Query = {
   __typename?: 'Query';
   getPosts: Array<Post>;
   getPost?: Maybe<Post>;
+  getSub?: Maybe<Sub>;
   hello: Scalars['String'];
   me?: Maybe<User>;
 };
@@ -115,10 +127,16 @@ export type QueryGetPostArgs = {
   slug: Scalars['String'];
 };
 
+
+export type QueryGetSubArgs = {
+  subName: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createPost: DefaultResponse;
   commentPost: Scalars['Boolean'];
+  addSubImage: AddSubImageResponse;
   createSub: DefaultResponse;
   register: UserResponse;
   login: UserResponse;
@@ -139,6 +157,13 @@ export type MutationCommentPostArgs = {
   text: Scalars['String'];
   identifier: Scalars['String'];
   slug: Scalars['String'];
+};
+
+
+export type MutationAddSubImageArgs = {
+  file: Scalars['Upload'];
+  type: Scalars['String'];
+  subName: Scalars['String'];
 };
 
 
@@ -164,8 +189,7 @@ export type MutationLoginArgs = {
 
 export type MutationVotePostArgs = {
   value: Scalars['Int'];
-  slug?: Maybe<Scalars['String']>;
-  identifier?: Maybe<Scalars['String']>;
+  postId: Scalars['String'];
 };
 
 
@@ -173,6 +197,7 @@ export type MutationVoteCommentArgs = {
   value: Scalars['Int'];
   commentId: Scalars['String'];
 };
+
 
 export type ErrorFieldFragment = (
   { __typename?: 'FieldError' }
@@ -193,6 +218,15 @@ export type RegularDefaultResponseFragment = (
   )>> }
 );
 
+export type RegularSubFragment = (
+  { __typename?: 'Sub' }
+  & Pick<Sub, 'id' | 'title' | 'name' | 'description' | 'username' | 'imageUrl' | 'bannerUrl'>
+  & { posts: Array<(
+    { __typename?: 'Post' }
+    & PostFieldFragment
+  )> }
+);
+
 export type RegularUserResponseFragment = (
   { __typename?: 'UserResponse' }
   & { user?: Maybe<(
@@ -206,7 +240,22 @@ export type RegularUserResponseFragment = (
 
 export type UserFieldFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'username' | 'email'>
+  & Pick<User, 'id' | 'username' | 'email'>
+);
+
+export type AddSubImageMutationVariables = Exact<{
+  file: Scalars['Upload'];
+  type: Scalars['String'];
+  subName: Scalars['String'];
+}>;
+
+
+export type AddSubImageMutation = (
+  { __typename?: 'Mutation' }
+  & { addSubImage: (
+    { __typename?: 'AddSubImageResponse' }
+    & Pick<AddSubImageResponse, 'type' | 'Urn'>
+  ) }
 );
 
 export type CommentPostMutationVariables = Exact<{
@@ -265,6 +314,14 @@ export type LoginMutation = (
   ) }
 );
 
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'logout'>
+);
+
 export type RegisterMutationVariables = Exact<{
   email: Scalars['String'];
   username: Scalars['String'];
@@ -278,6 +335,28 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   ) }
+);
+
+export type VoteCommentMutationVariables = Exact<{
+  value: Scalars['Int'];
+  commentId: Scalars['String'];
+}>;
+
+
+export type VoteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'voteComment'>
+);
+
+export type VotePostMutationVariables = Exact<{
+  postId: Scalars['String'];
+  value: Scalars['Int'];
+}>;
+
+
+export type VotePostMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'votePost'>
 );
 
 export type GetPostQueryVariables = Exact<{
@@ -305,6 +384,19 @@ export type GetPostsQuery = (
   )> }
 );
 
+export type GetSubQueryVariables = Exact<{
+  subName: Scalars['String'];
+}>;
+
+
+export type GetSubQuery = (
+  { __typename?: 'Query' }
+  & { getSub?: Maybe<(
+    { __typename?: 'Sub' }
+    & RegularSubFragment
+  )> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -316,6 +408,20 @@ export type MeQuery = (
   )> }
 );
 
+export const ErrorFieldFragmentDoc = gql`
+    fragment ErrorField on FieldError {
+  path
+  message
+}
+    `;
+export const RegularDefaultResponseFragmentDoc = gql`
+    fragment RegularDefaultResponse on DefaultResponse {
+  ok
+  errors {
+    ...ErrorField
+  }
+}
+    ${ErrorFieldFragmentDoc}`;
 export const PostFieldFragmentDoc = gql`
     fragment PostField on Post {
   id
@@ -333,22 +439,23 @@ export const PostFieldFragmentDoc = gql`
   updatedAt
 }
     `;
-export const ErrorFieldFragmentDoc = gql`
-    fragment ErrorField on FieldError {
-  path
-  message
-}
-    `;
-export const RegularDefaultResponseFragmentDoc = gql`
-    fragment RegularDefaultResponse on DefaultResponse {
-  ok
-  errors {
-    ...ErrorField
+export const RegularSubFragmentDoc = gql`
+    fragment RegularSub on Sub {
+  id
+  title
+  name
+  description
+  username
+  imageUrl
+  bannerUrl
+  posts {
+    ...PostField
   }
 }
-    ${ErrorFieldFragmentDoc}`;
+    ${PostFieldFragmentDoc}`;
 export const UserFieldFragmentDoc = gql`
     fragment UserField on User {
+  id
   username
   email
 }
@@ -364,6 +471,41 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${UserFieldFragmentDoc}
 ${ErrorFieldFragmentDoc}`;
+export const AddSubImageDocument = gql`
+    mutation AddSubImage($file: Upload!, $type: String!, $subName: String!) {
+  addSubImage(file: $file, type: $type, subName: $subName) {
+    type
+    Urn
+  }
+}
+    `;
+export type AddSubImageMutationFn = Apollo.MutationFunction<AddSubImageMutation, AddSubImageMutationVariables>;
+
+/**
+ * __useAddSubImageMutation__
+ *
+ * To run a mutation, you first call `useAddSubImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddSubImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addSubImageMutation, { data, loading, error }] = useAddSubImageMutation({
+ *   variables: {
+ *      file: // value for 'file'
+ *      type: // value for 'type'
+ *      subName: // value for 'subName'
+ *   },
+ * });
+ */
+export function useAddSubImageMutation(baseOptions?: Apollo.MutationHookOptions<AddSubImageMutation, AddSubImageMutationVariables>) {
+        return Apollo.useMutation<AddSubImageMutation, AddSubImageMutationVariables>(AddSubImageDocument, baseOptions);
+      }
+export type AddSubImageMutationHookResult = ReturnType<typeof useAddSubImageMutation>;
+export type AddSubImageMutationResult = Apollo.MutationResult<AddSubImageMutation>;
+export type AddSubImageMutationOptions = Apollo.BaseMutationOptions<AddSubImageMutation, AddSubImageMutationVariables>;
 export const CommentPostDocument = gql`
     mutation CommentPost($text: String!, $identifier: String!, $slug: String!) {
   commentPost(text: $text, identifier: $identifier, slug: $slug)
@@ -497,6 +639,35 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const LogoutDocument = gql`
+    mutation Logout {
+  logout
+}
+    `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
+
+/**
+ * __useLogoutMutation__
+ *
+ * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, baseOptions);
+      }
+export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
+export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($email: String!, $username: String!, $password: String!) {
   register(email: $email, username: $username, password: $password) {
@@ -531,6 +702,68 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const VoteCommentDocument = gql`
+    mutation VoteComment($value: Int!, $commentId: String!) {
+  voteComment(value: $value, commentId: $commentId)
+}
+    `;
+export type VoteCommentMutationFn = Apollo.MutationFunction<VoteCommentMutation, VoteCommentMutationVariables>;
+
+/**
+ * __useVoteCommentMutation__
+ *
+ * To run a mutation, you first call `useVoteCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVoteCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [voteCommentMutation, { data, loading, error }] = useVoteCommentMutation({
+ *   variables: {
+ *      value: // value for 'value'
+ *      commentId: // value for 'commentId'
+ *   },
+ * });
+ */
+export function useVoteCommentMutation(baseOptions?: Apollo.MutationHookOptions<VoteCommentMutation, VoteCommentMutationVariables>) {
+        return Apollo.useMutation<VoteCommentMutation, VoteCommentMutationVariables>(VoteCommentDocument, baseOptions);
+      }
+export type VoteCommentMutationHookResult = ReturnType<typeof useVoteCommentMutation>;
+export type VoteCommentMutationResult = Apollo.MutationResult<VoteCommentMutation>;
+export type VoteCommentMutationOptions = Apollo.BaseMutationOptions<VoteCommentMutation, VoteCommentMutationVariables>;
+export const VotePostDocument = gql`
+    mutation VotePost($postId: String!, $value: Int!) {
+  votePost(postId: $postId, value: $value)
+}
+    `;
+export type VotePostMutationFn = Apollo.MutationFunction<VotePostMutation, VotePostMutationVariables>;
+
+/**
+ * __useVotePostMutation__
+ *
+ * To run a mutation, you first call `useVotePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVotePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [votePostMutation, { data, loading, error }] = useVotePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *      value: // value for 'value'
+ *   },
+ * });
+ */
+export function useVotePostMutation(baseOptions?: Apollo.MutationHookOptions<VotePostMutation, VotePostMutationVariables>) {
+        return Apollo.useMutation<VotePostMutation, VotePostMutationVariables>(VotePostDocument, baseOptions);
+      }
+export type VotePostMutationHookResult = ReturnType<typeof useVotePostMutation>;
+export type VotePostMutationResult = Apollo.MutationResult<VotePostMutation>;
+export type VotePostMutationOptions = Apollo.BaseMutationOptions<VotePostMutation, VotePostMutationVariables>;
 export const GetPostDocument = gql`
     query GetPost($identifier: String!, $slug: String!) {
   getPost(identifier: $identifier, slug: $slug) {
@@ -597,6 +830,39 @@ export function useGetPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetPostsQueryHookResult = ReturnType<typeof useGetPostsQuery>;
 export type GetPostsLazyQueryHookResult = ReturnType<typeof useGetPostsLazyQuery>;
 export type GetPostsQueryResult = Apollo.QueryResult<GetPostsQuery, GetPostsQueryVariables>;
+export const GetSubDocument = gql`
+    query GetSub($subName: String!) {
+  getSub(subName: $subName) {
+    ...RegularSub
+  }
+}
+    ${RegularSubFragmentDoc}`;
+
+/**
+ * __useGetSubQuery__
+ *
+ * To run a query within a React component, call `useGetSubQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSubQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSubQuery({
+ *   variables: {
+ *      subName: // value for 'subName'
+ *   },
+ * });
+ */
+export function useGetSubQuery(baseOptions: Apollo.QueryHookOptions<GetSubQuery, GetSubQueryVariables>) {
+        return Apollo.useQuery<GetSubQuery, GetSubQueryVariables>(GetSubDocument, baseOptions);
+      }
+export function useGetSubLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSubQuery, GetSubQueryVariables>) {
+          return Apollo.useLazyQuery<GetSubQuery, GetSubQueryVariables>(GetSubDocument, baseOptions);
+        }
+export type GetSubQueryHookResult = ReturnType<typeof useGetSubQuery>;
+export type GetSubLazyQueryHookResult = ReturnType<typeof useGetSubLazyQuery>;
+export type GetSubQueryResult = Apollo.QueryResult<GetSubQuery, GetSubQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

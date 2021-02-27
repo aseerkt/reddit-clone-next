@@ -5,9 +5,10 @@ import { createConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import { buildSchema } from 'type-graphql';
-import { PORT } from './constants';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import { graphqlUploadExpress } from 'graphql-upload';
+import { PORT } from './constants';
 import { createUserLoader } from './utils/createUserLoader';
 import { createSubLoader } from './utils/createSubLoader';
 
@@ -24,11 +25,18 @@ const main = async () => {
   );
   app.use(cookieParser());
   app.get('/', (_, res) => res.send('Reddit Clone Backend API'));
+  app.use('/', express.static('public'));
+
+  app.use(
+    '/graphql',
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+  );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [__dirname + '/resolvers/**/*.{ts,js}'],
     }),
+    uploads: false,
     context: ({ req, res, connection }) => {
       const exceptions = ['password'];
       if (connection?.variables) {
