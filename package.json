@@ -43,7 +43,8 @@
       "typeorm": "ts-node ./node_modules/typeorm/cli.js",
       "seed": "tsc && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
       "start-ts-node": "ts-node src/index.ts",
-      "gen-env": "npx gen-env-types .env -o src/env.d.ts -e ."
+      "gen-env": "npx gen-env-types .env -o src/env.d.ts -e .",
+      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false cd client && yarn && yarn build"
    },
    "license": "MIT"
 }

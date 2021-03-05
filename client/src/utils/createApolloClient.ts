@@ -4,7 +4,7 @@ import { createUploadLink } from 'apollo-upload-client';
 import { PaginatedPost } from '../generated/graphql';
 
 const httpLink = createUploadLink({
-  uri: 'http://localhost:5000/graphql',
+  uri: `${process.env.APP_URL}/graphql`,
   credentials: 'include',
 });
 
