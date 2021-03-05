@@ -1,6 +1,7 @@
 const dotenv = require('dotenv-safe');
 
 dotenv.config();
+const rootDir = process.env.NODE_ENV === 'production' ? 'src/' : 'dist/';
 
 module.exports = {
   type: 'postgres',
@@ -12,10 +13,10 @@ module.exports = {
   database: 'cl-reddit',
   synchronize: false,
   logging: true,
-  entities: ['dist/entities/**/*.js'],
-  migrations: ['dist/migrations/**/*.js'],
-  subscribers: ['dist/subscribers/**/*.js'],
-  seeds: ['dist/seeds/**/*.js'],
+  entities: [rootDir + 'entities/**/*.js'],
+  migrations: [rootDir + 'migrations/**/*.js'],
+  subscribers: [rootDir + 'subscribers/**/*.js'],
+  seeds: [rootDir + 'seeds/**/*.js'],
   cli: {
     entitiesDir: 'src/entities',
     migrationsDir: 'src/migrations',
