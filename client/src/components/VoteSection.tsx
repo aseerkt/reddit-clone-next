@@ -1,6 +1,11 @@
 import { gql, ApolloCache } from '@apollo/client';
 import cn from 'classnames';
-import { useVotePostMutation, VotePostMutation } from '../generated/graphql';
+import {
+  useVoteCommentMutation,
+  useVotePostMutation,
+  VoteCommentMutation,
+  VotePostMutation,
+} from '../generated/graphql';
 
 interface VoteSectionProps {
   postId?: string;
@@ -9,13 +14,15 @@ interface VoteSectionProps {
   voteScore: number;
 }
 
-function setPostScore(
-  cache: ApolloCache<VotePostMutation>,
+function setVoteScore<MutationType>(
+  cache: ApolloCache<MutationType>,
   id: string,
   userVote: number | null,
   voteScore: number,
-  value: 1 | -1
+  value: 1 | -1,
+  type: 'post' | 'comment'
 ) {
+  // Calculate Score Change
   let scoreChange = 0;
   if (userVote) {
     if (userVote === value) {
@@ -27,9 +34,21 @@ function setPostScore(
     scoreChange = value;
   }
   console.log('before write fragment');
-  cache.writeFragment({
+
+  // Write Score Change into the cache
+
+  const FragmentName = type === 'post' ? '_P' : '_C';
+  const FragmentOnType = type === 'post' ? 'Post' : 'Comment';
+  const FragmentId = (type === 'post' ? 'Post:' : 'Comment:') + id;
+
+  cache.writeFragment<{
+    id: string;
+    userVote: 1 | -1 | null;
+    voteScore: number;
+  }>({
+    id: FragmentId,
     fragment: gql`
-      fragment _ on Post {
+      fragment ${FragmentName} on ${FragmentOnType} {
         id
         userVote
         voteScore
@@ -40,60 +59,87 @@ function setPostScore(
       userVote: userVote === value ? null : value,
       voteScore: voteScore + scoreChange,
     },
-    id: 'Post:' + id,
   });
 }
 
 const VoteSection: React.FC<VoteSectionProps> = ({
   postId,
+  commentId,
   userVote,
   voteScore,
 }) => {
   const [votePost] = useVotePostMutation();
+  const [voteComment] = useVoteCommentMutation();
+
+  const onVoteClickAction = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const value = e.currentTarget.getAttribute('title') === 'upvote' ? 1 : -1;
+    console.log(value);
+    if (postId) {
+      votePost({
+        variables: { postId, value },
+        update: (cache, { data }) => {
+          if (data.votePost)
+            setVoteScore<VotePostMutation>(
+              cache,
+              postId,
+              userVote,
+              voteScore,
+              value,
+              'post'
+            );
+        },
+      });
+    } else if (commentId) {
+      voteComment({
+        variables: { commentId, value },
+        update: (cache, { data }) => {
+          if (data.voteComment)
+            setVoteScore<VoteCommentMutation>(
+              cache,
+              commentId,
+              userVote,
+              voteScore,
+              value,
+              'comment'
+            );
+        },
+      });
+    }
+  };
 
   return (
     <>
       {/* Upvote */}
       <div
-        onClick={() => {
-          votePost({
-            variables: { postId, value: 1 },
-            update: (cache, { data }) => {
-              if (data.votePost)
-                setPostScore(cache, postId, userVote, voteScore, 1);
-            },
-          });
-        }}
+        title='upvote'
+        onClick={onVoteClickAction}
         className={cn(
-          'w-6 mx-auto text-gray-400 rounded hover:bg-gray-300 hover:text-red-500',
+          'w-6 h-6 mx-auto text-center  cursor-pointer text-gray-400 rounded hover:bg-gray-300 hover:text-red-500',
           {
             'text-red-500 bg-gray-300': userVote === 1,
           }
         )}
       >
-        <i className='icon-arrow-up'></i>
+        <i className='my-auto icon-arrow-up'></i>
       </div>
 
       {/* VoteScore */}
-      <span className='text-sm font-bold'>{voteScore}</span>
+      <span className='w-6 text-sm font-bold text-center align-middle'>
+        {voteScore}
+      </span>
 
       {/* Downvote */}
       <div
-        onClick={() => {
-          votePost({
-            variables: { postId, value: -1 },
-            update: (cache, { data }) => {
-              if (data.votePost)
-                setPostScore(cache, postId, userVote, voteScore, -1);
-            },
-          });
-        }}
+        title='downvote'
+        onClick={onVoteClickAction}
         className={cn(
-          'w-6 mx-auto text-gray-400 rounded hover:bg-gray-300 hover:text-blue-600',
+          'w-6 h-6 mx-auto cursor-pointer  text-center text-gray-400 rounded hover:bg-gray-300 hover:text-blue-600',
           { 'bg-gray-300 text-blue-600': userVote === -1 }
         )}
       >
-        <i className='icon-arrow-down'></i>
+        <i className='align-middle icon-arrow-down'></i>
       </div>
     </>
   );

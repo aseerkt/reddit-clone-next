@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Post } from '../generated/graphql';
 import VoteSection from './VoteSection';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 dayjs.extend(relativeTime);
 
@@ -19,8 +21,13 @@ const PostCard: React.FC<{ post: Post }> = ({
     commentCount,
     voteScore,
     userVote,
+    sub,
   },
 }) => {
+  const router = useRouter();
+  const { subName: subname }: any = router.query;
+  const showSubData = subname !== subName;
+
   return (
     <div className='flex mb-4 overflow-hidden bg-white rounded'>
       {/* Vote Section */}
@@ -29,18 +36,29 @@ const PostCard: React.FC<{ post: Post }> = ({
       </div>
       <div className='w-full p-2'>
         <div className='flex items-center'>
-          <Link href={`/r/${subName}`}>
-            <img
-              src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'
-              className='w-6 h-6 mr-1 rounded-full cursor-pointer'
-              alt='gravatar'
-            />
-          </Link>
-          <Link href={`/r/${subName}`}>
-            <a className='text-xs font-bold hover:underline'>r/{subName}</a>
-          </Link>
+          {showSubData && (
+            <>
+              <Link href={`/r/${subName}`}>
+                <div className='relative w-6 h-6 mr-1 overflow-hidden rounded-full'>
+                  <Image
+                    src={sub.imageUrl}
+                    alt='sub image'
+                    layout='fill'
+                    objectFit='cover'
+                    objectPosition='center'
+                  />
+                </div>
+              </Link>
+              <Link href={`/r/${subName}`}>
+                <a className='text-xs font-bold hover:underline'>r/{subName}</a>
+              </Link>
+            </>
+          )}
           <p className='text-xs text-gray-500'>
-            <span className='mx-1'>•</span> Posted by{' '}
+            <span hidden={!showSubData} className='mx-1'>
+              •
+            </span>{' '}
+            Posted by{' '}
             <Link href={`/u/${username}`}>
               <a className='mx-1 hover:underline'>u/{username}</a>
             </Link>
@@ -67,7 +85,7 @@ const PostCard: React.FC<{ post: Post }> = ({
             Share
           </a>
           <a className='p-2 mr-1 text-xs font-bold text-gray-400 rounded cursor-pointer hover:bg-gray-200'>
-            <i className='mr-1 fas fa-bookmark'></i>
+            <i className='mr-1 far fa-bookmark'></i>
             Save
           </a>
         </div>

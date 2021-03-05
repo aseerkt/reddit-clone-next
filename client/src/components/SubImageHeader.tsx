@@ -70,13 +70,19 @@ const SubImageHeader: React.FC<SubImageHeaderProps> = ({ sub }) => {
         onChange={uploadFile}
       />
       <div
-        className={cn('h-32 bg-blue-500 relative', {
+        className={cn('h-32 bg-blue-500 relative w-screen', {
           'cursor-pointer': ownSub,
         })}
         onClick={() => openFileInput('banner')}
       >
         {bannerUrl && (
-          <Image src={bannerUrl} alt='Banner' layout='fill' objectFit='cover' />
+          <Image
+            src={bannerUrl}
+            alt='Banner'
+            className='w-full h-auto'
+            layout='fill'
+            objectFit='cover'
+          />
         )}
       </div>
       <div className='bg-white'>
@@ -85,15 +91,16 @@ const SubImageHeader: React.FC<SubImageHeaderProps> = ({ sub }) => {
             onClick={() => openFileInput('image')}
             className={cn('absolute -top-1/4', { 'cursor-pointer': ownSub })}
           >
-            <Image
-              className='rounded-full'
-              src={imageUrl}
-              alt='Image'
-              width={70}
-              height={70}
-              objectPosition='center'
-              objectFit='cover'
-            />
+            <div className='relative w-20 h-20 overflow-hidden rounded-full'>
+              <Image
+                className='rounded-full'
+                src={imageUrl}
+                alt='Image'
+                layout='fill'
+                objectPosition='center'
+                objectFit='cover'
+              />
+            </div>
           </div>
           <div className='py-2 pl-24'>
             <h1 className='mb-1 text-3xl font-bold'>{sub.title}</h1>

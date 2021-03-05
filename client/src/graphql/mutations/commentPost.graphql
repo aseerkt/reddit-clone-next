@@ -1,3 +1,5 @@
-mutation CommentPost($text: String!, $identifier: String!, $slug: String!) {
-  commentPost(text: $text, identifier: $identifier, slug: $slug)
+mutation CommentPost($postId: String!, $text: String!) {
+  commentPost(text: $text, postId: $postId) {
+    ...RegularComment
+  }
 }

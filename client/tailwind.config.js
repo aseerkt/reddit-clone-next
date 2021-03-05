@@ -26,7 +26,10 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      opacity: ['disabled'],
+      cursor: ['disabled'],
+    },
   },
   plugins: [
     function ({ addComponents }) {
@@ -37,7 +40,7 @@ module.exports = {
           marginRight: 'auto',
           '@screen sm': { maxWidth: '640px' },
           '@screen md': { maxWidth: '768px' },
-          '@screen lg': { maxWidth: '975px' },
+          '@screen lg': { maxWidth: '1000px' },
         },
       });
     },

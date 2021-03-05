@@ -1,0 +1,8 @@
+query GetTopSub {
+  getTopSubs {
+    name
+    title
+    imageUrl
+    postCount
+  }
+}

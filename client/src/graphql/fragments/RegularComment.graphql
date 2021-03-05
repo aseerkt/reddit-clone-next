@@ -1,0 +1,5 @@
+fragment RegularComment on Comment {
+  ...CommentField
+  userVote
+  voteScore
+}

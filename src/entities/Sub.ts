@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { SUB_DEFAULT_IMAGE_URL } from '../constants';
 import { BaseColumns } from './BaseColums';
 import { Post } from './Post';
 import { User } from './User';
@@ -70,6 +71,6 @@ export class Sub extends BaseColumns {
       : null;
     this.imageUrl = this.imageUrn
       ? `${process.env.APP_URL}/${this.imageUrn}`
-      : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+      : SUB_DEFAULT_IMAGE_URL;
   }
 }

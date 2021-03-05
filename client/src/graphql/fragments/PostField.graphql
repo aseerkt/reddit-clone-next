@@ -12,4 +12,7 @@ fragment PostField on Post {
   userVote
   createdAt
   updatedAt
+  sub {
+    imageUrl
+  }
 }

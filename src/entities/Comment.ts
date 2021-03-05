@@ -23,6 +23,10 @@ export class Comment extends BaseColumns {
   @Column()
   username: string;
 
+  @Field()
+  @Column()
+  postId: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;

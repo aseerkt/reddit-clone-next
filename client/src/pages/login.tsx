@@ -8,12 +8,17 @@ import Button from '../components/Button';
 
 const Login = () => {
   const router = useRouter();
+  const { next }: any = router.query;
   const [login] = useLoginMutation({
     update: (cache, { data }) => {
       const user = data.login.user;
       if (user) {
         cache.writeQuery({ query: MeDocument, data: { me: user } });
-        router.push('/');
+        if (next) {
+          next === 'back' ? router.back() : router.push(next);
+        } else {
+          router.push('/');
+        }
       }
     },
   });

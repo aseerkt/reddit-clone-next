@@ -14,7 +14,7 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import { getRepository } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 import { Post } from '../entities/Post';
 import { Sub } from '../entities/Sub';
 import { isAuth } from '../middlewares/isAuth';
@@ -24,6 +24,7 @@ import { getUserFromCookie } from '../utils/cookieHandler';
 import { AuthenticationError } from 'apollo-server-express';
 import { uploadFile } from '../utils/uploadFile';
 import { unlinkSync } from 'fs';
+import { SUB_DEFAULT_IMAGE_URL } from '../constants';
 
 @ArgsType()
 class CreateSubArgs {
@@ -51,6 +52,18 @@ class AddSubImageResponse {
   type: 'banner' | 'image';
   @Field()
   Urn: string;
+}
+
+@ObjectType()
+class TopSub {
+  @Field()
+  name: string;
+  @Field()
+  title: string;
+  @Field()
+  imageUrl: string;
+  @Field()
+  postCount: string;
 }
 
 @Resolver(Sub)
@@ -103,11 +116,37 @@ export class SubResolver {
     }
   }
 
+  @Query(() => [TopSub])
+  async getTopSubs() {
+    const imgUrlExp = `COALESCE('${process.env.APP_URL}/' || s."imageUrn", '${SUB_DEFAULT_IMAGE_URL}')`;
+    const subs = await getConnection()
+      .createQueryBuilder()
+      .select(
+        `s.name, s.title, ${imgUrlExp} as "imageUrl", count(p.id) as "postCount"`
+      )
+      .from(Sub, 's')
+      .leftJoin(Post, 'p', 's.name = p."subName"')
+      .groupBy('s.name, s.title, "imageUrl"')
+      .orderBy('"postCount"', 'DESC')
+      .limit(5)
+      .execute();
+    return subs;
+  }
+
   @Query(() => Sub, { nullable: true })
   getSub(@Arg('subName') subName: string, @Ctx() { subLoader }: MyContext) {
     return subLoader.load(subName);
   }
 
+  @Query(() => [Sub])
+  async searchSub(@Arg('term') term: string) {
+    return await getConnection()
+      .createQueryBuilder(Sub, 'sub')
+      .where('lower(sub.name) LIKE :term', {
+        term: `${term.toLowerCase().trim()}%`,
+      })
+      .getMany();
+  }
   @Mutation(() => DefaultResponse)
   @UseMiddleware(isAuth)
   async createSub(

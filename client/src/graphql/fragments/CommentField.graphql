@@ -1,0 +1,8 @@
+fragment CommentField on Comment {
+  id
+  text
+  username
+  postId
+  createdAt
+  updatedAt
+}

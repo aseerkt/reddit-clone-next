@@ -57,6 +57,9 @@ export type Comment = {
   updatedAt: Scalars['DateTime'];
   text: Scalars['String'];
   username: Scalars['String'];
+  postId: Scalars['String'];
+  voteScore: Scalars['Float'];
+  userVote?: Maybe<Scalars['Float']>;
 };
 
 export type Post = {
@@ -69,14 +72,14 @@ export type Post = {
   title: Scalars['String'];
   body: Scalars['String'];
   url: Scalars['String'];
-  commentCount: Scalars['Int'];
-  voteScore: Scalars['Int'];
-  userVote?: Maybe<Scalars['Int']>;
   username: Scalars['String'];
   subName: Scalars['String'];
   creator: User;
   sub: Sub;
   comments: Array<Comment>;
+  commentCount: Scalars['Int'];
+  voteScore: Scalars['Int'];
+  userVote?: Maybe<Scalars['Int']>;
 };
 
 export type User = {
@@ -100,10 +103,24 @@ export type DefaultResponse = {
   errors?: Maybe<Array<FieldError>>;
 };
 
+export type PaginatedPost = {
+  __typename?: 'PaginatedPost';
+  hasMore: Scalars['Boolean'];
+  posts: Array<Post>;
+};
+
 export type AddSubImageResponse = {
   __typename?: 'AddSubImageResponse';
   type: Scalars['String'];
   Urn: Scalars['String'];
+};
+
+export type TopSub = {
+  __typename?: 'TopSub';
+  name: Scalars['String'];
+  title: Scalars['String'];
+  imageUrl: Scalars['String'];
+  postCount: Scalars['String'];
 };
 
 export type UserResponse = {
@@ -114,11 +131,19 @@ export type UserResponse = {
 
 export type Query = {
   __typename?: 'Query';
-  getPosts: Array<Post>;
+  getPosts: PaginatedPost;
   getPost?: Maybe<Post>;
+  getTopSubs: Array<TopSub>;
   getSub?: Maybe<Sub>;
+  searchSub: Array<Sub>;
   hello: Scalars['String'];
   me?: Maybe<User>;
+};
+
+
+export type QueryGetPostsArgs = {
+  offset: Scalars['Int'];
+  limit: Scalars['Int'];
 };
 
 
@@ -132,10 +157,15 @@ export type QueryGetSubArgs = {
   subName: Scalars['String'];
 };
 
+
+export type QuerySearchSubArgs = {
+  term: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  commentPost?: Maybe<Comment>;
   createPost: DefaultResponse;
-  commentPost: Scalars['Boolean'];
   addSubImage: AddSubImageResponse;
   createSub: DefaultResponse;
   register: UserResponse;
@@ -146,17 +176,16 @@ export type Mutation = {
 };
 
 
+export type MutationCommentPostArgs = {
+  text: Scalars['String'];
+  postId: Scalars['String'];
+};
+
+
 export type MutationCreatePostArgs = {
   title: Scalars['String'];
   body?: Maybe<Scalars['String']>;
   subName: Scalars['String'];
-};
-
-
-export type MutationCommentPostArgs = {
-  text: Scalars['String'];
-  identifier: Scalars['String'];
-  slug: Scalars['String'];
 };
 
 
@@ -199,6 +228,11 @@ export type MutationVoteCommentArgs = {
 };
 
 
+export type CommentFieldFragment = (
+  { __typename?: 'Comment' }
+  & Pick<Comment, 'id' | 'text' | 'username' | 'postId' | 'createdAt' | 'updatedAt'>
+);
+
 export type ErrorFieldFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'path' | 'message'>
@@ -207,6 +241,16 @@ export type ErrorFieldFragment = (
 export type PostFieldFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'slug' | 'identifier' | 'title' | 'body' | 'username' | 'subName' | 'url' | 'commentCount' | 'voteScore' | 'userVote' | 'createdAt' | 'updatedAt'>
+  & { sub: (
+    { __typename?: 'Sub' }
+    & Pick<Sub, 'imageUrl'>
+  ) }
+);
+
+export type RegularCommentFragment = (
+  { __typename?: 'Comment' }
+  & Pick<Comment, 'userVote' | 'voteScore'>
+  & CommentFieldFragment
 );
 
 export type RegularDefaultResponseFragment = (
@@ -259,15 +303,17 @@ export type AddSubImageMutation = (
 );
 
 export type CommentPostMutationVariables = Exact<{
+  postId: Scalars['String'];
   text: Scalars['String'];
-  identifier: Scalars['String'];
-  slug: Scalars['String'];
 }>;
 
 
 export type CommentPostMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'commentPost'>
+  & { commentPost?: Maybe<(
+    { __typename?: 'Comment' }
+    & RegularCommentFragment
+  )> }
 );
 
 export type CreatePostMutationVariables = Exact<{
@@ -359,6 +405,19 @@ export type VotePostMutation = (
   & Pick<Mutation, 'votePost'>
 );
 
+export type SearchSubQueryVariables = Exact<{
+  term: Scalars['String'];
+}>;
+
+
+export type SearchSubQuery = (
+  { __typename?: 'Query' }
+  & { searchSub: Array<(
+    { __typename?: 'Sub' }
+    & Pick<Sub, 'id' | 'name' | 'title' | 'imageUrl'>
+  )> }
+);
+
 export type GetPostQueryVariables = Exact<{
   identifier: Scalars['String'];
   slug: Scalars['String'];
@@ -369,19 +428,30 @@ export type GetPostQuery = (
   { __typename?: 'Query' }
   & { getPost?: Maybe<(
     { __typename?: 'Post' }
+    & { comments: Array<(
+      { __typename?: 'Comment' }
+      & RegularCommentFragment
+    )> }
     & PostFieldFragment
   )> }
 );
 
-export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
 
 
 export type GetPostsQuery = (
   { __typename?: 'Query' }
-  & { getPosts: Array<(
-    { __typename?: 'Post' }
-    & PostFieldFragment
-  )> }
+  & { getPosts: (
+    { __typename?: 'PaginatedPost' }
+    & Pick<PaginatedPost, 'hasMore'>
+    & { posts: Array<(
+      { __typename?: 'Post' }
+      & PostFieldFragment
+    )> }
+  ) }
 );
 
 export type GetSubQueryVariables = Exact<{
@@ -397,6 +467,17 @@ export type GetSubQuery = (
   )> }
 );
 
+export type GetTopSubQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTopSubQuery = (
+  { __typename?: 'Query' }
+  & { getTopSubs: Array<(
+    { __typename?: 'TopSub' }
+    & Pick<TopSub, 'name' | 'title' | 'imageUrl' | 'postCount'>
+  )> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -408,6 +489,23 @@ export type MeQuery = (
   )> }
 );
 
+export const CommentFieldFragmentDoc = gql`
+    fragment CommentField on Comment {
+  id
+  text
+  username
+  postId
+  createdAt
+  updatedAt
+}
+    `;
+export const RegularCommentFragmentDoc = gql`
+    fragment RegularComment on Comment {
+  ...CommentField
+  userVote
+  voteScore
+}
+    ${CommentFieldFragmentDoc}`;
 export const ErrorFieldFragmentDoc = gql`
     fragment ErrorField on FieldError {
   path
@@ -437,6 +535,9 @@ export const PostFieldFragmentDoc = gql`
   userVote
   createdAt
   updatedAt
+  sub {
+    imageUrl
+  }
 }
     `;
 export const RegularSubFragmentDoc = gql`
@@ -507,10 +608,12 @@ export type AddSubImageMutationHookResult = ReturnType<typeof useAddSubImageMuta
 export type AddSubImageMutationResult = Apollo.MutationResult<AddSubImageMutation>;
 export type AddSubImageMutationOptions = Apollo.BaseMutationOptions<AddSubImageMutation, AddSubImageMutationVariables>;
 export const CommentPostDocument = gql`
-    mutation CommentPost($text: String!, $identifier: String!, $slug: String!) {
-  commentPost(text: $text, identifier: $identifier, slug: $slug)
+    mutation CommentPost($postId: String!, $text: String!) {
+  commentPost(text: $text, postId: $postId) {
+    ...RegularComment
+  }
 }
-    `;
+    ${RegularCommentFragmentDoc}`;
 export type CommentPostMutationFn = Apollo.MutationFunction<CommentPostMutation, CommentPostMutationVariables>;
 
 /**
@@ -526,9 +629,8 @@ export type CommentPostMutationFn = Apollo.MutationFunction<CommentPostMutation,
  * @example
  * const [commentPostMutation, { data, loading, error }] = useCommentPostMutation({
  *   variables: {
+ *      postId: // value for 'postId'
  *      text: // value for 'text'
- *      identifier: // value for 'identifier'
- *      slug: // value for 'slug'
  *   },
  * });
  */
@@ -764,13 +866,53 @@ export function useVotePostMutation(baseOptions?: Apollo.MutationHookOptions<Vot
 export type VotePostMutationHookResult = ReturnType<typeof useVotePostMutation>;
 export type VotePostMutationResult = Apollo.MutationResult<VotePostMutation>;
 export type VotePostMutationOptions = Apollo.BaseMutationOptions<VotePostMutation, VotePostMutationVariables>;
+export const SearchSubDocument = gql`
+    query SearchSub($term: String!) {
+  searchSub(term: $term) {
+    id
+    name
+    title
+    imageUrl
+  }
+}
+    `;
+
+/**
+ * __useSearchSubQuery__
+ *
+ * To run a query within a React component, call `useSearchSubQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchSubQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchSubQuery({
+ *   variables: {
+ *      term: // value for 'term'
+ *   },
+ * });
+ */
+export function useSearchSubQuery(baseOptions: Apollo.QueryHookOptions<SearchSubQuery, SearchSubQueryVariables>) {
+        return Apollo.useQuery<SearchSubQuery, SearchSubQueryVariables>(SearchSubDocument, baseOptions);
+      }
+export function useSearchSubLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchSubQuery, SearchSubQueryVariables>) {
+          return Apollo.useLazyQuery<SearchSubQuery, SearchSubQueryVariables>(SearchSubDocument, baseOptions);
+        }
+export type SearchSubQueryHookResult = ReturnType<typeof useSearchSubQuery>;
+export type SearchSubLazyQueryHookResult = ReturnType<typeof useSearchSubLazyQuery>;
+export type SearchSubQueryResult = Apollo.QueryResult<SearchSubQuery, SearchSubQueryVariables>;
 export const GetPostDocument = gql`
     query GetPost($identifier: String!, $slug: String!) {
   getPost(identifier: $identifier, slug: $slug) {
     ...PostField
+    comments {
+      ...RegularComment
+    }
   }
 }
-    ${PostFieldFragmentDoc}`;
+    ${PostFieldFragmentDoc}
+${RegularCommentFragmentDoc}`;
 
 /**
  * __useGetPostQuery__
@@ -799,9 +941,12 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts {
-  getPosts {
-    ...PostField
+    query GetPosts($limit: Int!, $offset: Int!) {
+  getPosts(limit: $limit, offset: $offset) {
+    posts {
+      ...PostField
+    }
+    hasMore
   }
 }
     ${PostFieldFragmentDoc}`;
@@ -818,10 +963,12 @@ export const GetPostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetPostsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */
-export function useGetPostsQuery(baseOptions?: Apollo.QueryHookOptions<GetPostsQuery, GetPostsQueryVariables>) {
+export function useGetPostsQuery(baseOptions: Apollo.QueryHookOptions<GetPostsQuery, GetPostsQueryVariables>) {
         return Apollo.useQuery<GetPostsQuery, GetPostsQueryVariables>(GetPostsDocument, baseOptions);
       }
 export function useGetPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostsQuery, GetPostsQueryVariables>) {
@@ -863,6 +1010,41 @@ export function useGetSubLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Get
 export type GetSubQueryHookResult = ReturnType<typeof useGetSubQuery>;
 export type GetSubLazyQueryHookResult = ReturnType<typeof useGetSubLazyQuery>;
 export type GetSubQueryResult = Apollo.QueryResult<GetSubQuery, GetSubQueryVariables>;
+export const GetTopSubDocument = gql`
+    query GetTopSub {
+  getTopSubs {
+    name
+    title
+    imageUrl
+    postCount
+  }
+}
+    `;
+
+/**
+ * __useGetTopSubQuery__
+ *
+ * To run a query within a React component, call `useGetTopSubQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTopSubQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTopSubQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTopSubQuery(baseOptions?: Apollo.QueryHookOptions<GetTopSubQuery, GetTopSubQueryVariables>) {
+        return Apollo.useQuery<GetTopSubQuery, GetTopSubQueryVariables>(GetTopSubDocument, baseOptions);
+      }
+export function useGetTopSubLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTopSubQuery, GetTopSubQueryVariables>) {
+          return Apollo.useLazyQuery<GetTopSubQuery, GetTopSubQueryVariables>(GetTopSubDocument, baseOptions);
+        }
+export type GetTopSubQueryHookResult = ReturnType<typeof useGetTopSubQuery>;
+export type GetTopSubLazyQueryHookResult = ReturnType<typeof useGetTopSubLazyQuery>;
+export type GetTopSubQueryResult = Apollo.QueryResult<GetTopSubQuery, GetTopSubQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

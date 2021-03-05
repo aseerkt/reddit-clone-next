@@ -43,7 +43,7 @@ export class VoteResolver {
   ): Promise<boolean> {
     if (![-1, 1].includes(value)) return false;
     const user = res.locals.user;
-    const comment = await Comment.findOne({ id: commentId, user });
+    const comment = await Comment.findOne({ id: commentId });
     if (!comment) return false;
     const vote = await Vote.findOne({ comment, user });
     if (!vote) {

@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import {
   AfterLoad,
   BeforeInsert,
@@ -48,15 +48,6 @@ export class Post extends BaseColumns {
 
   @Field()
   protected url: string;
-
-  @Field(() => Int)
-  commentCount: number;
-
-  @Field(() => Int)
-  voteScore: number;
-
-  @Field(() => Int, { nullable: true })
-  userVote: number | null;
 
   // Relations
 

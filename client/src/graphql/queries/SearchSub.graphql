@@ -1,0 +1,8 @@
+query SearchSub($term: String!) {
+  searchSub(term: $term) {
+    id
+    name
+    title
+    imageUrl
+  }
+}

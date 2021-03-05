@@ -1,4 +1,5 @@
 import {
+  Arg,
   Args,
   ArgsType,
   Ctx,
@@ -6,6 +7,7 @@ import {
   FieldResolver,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
@@ -38,6 +40,14 @@ export class FetchPostArgs {
   slug: string;
 }
 
+@ObjectType()
+class PaginatedPost {
+  @Field()
+  hasMore: boolean;
+  @Field(() => [Post])
+  posts: Post[];
+}
+
 @Resolver(Post)
 export class PostResolver {
   // Creator
@@ -55,7 +65,7 @@ export class PostResolver {
   //Comments
   @FieldResolver(() => [Comment])
   comments(@Root() post: Post) {
-    return Comment.find({ post });
+    return Comment.find({ where: { post }, order: { createdAt: 'DESC' } });
   }
 
   //CommentCount
@@ -65,7 +75,7 @@ export class PostResolver {
     return Comment.count({ post });
   }
 
-  //VoteScore
+  //PostScore
   @FieldResolver(() => Int)
   async voteScore(@Root() post: Post) {
     const votes = await Vote.find({ post });
@@ -76,9 +86,12 @@ export class PostResolver {
   }
 
   //UserVote
-  @FieldResolver(() => Int)
+  @FieldResolver(() => Int, { nullable: true })
   @UseMiddleware(isUser)
-  async userVote(@Root() post: Post, @Ctx() { res }: MyContext) {
+  async userVote(
+    @Root() post: Post,
+    @Ctx() { res }: MyContext
+  ): Promise<number | null> {
     const vote = await Vote.findOne({
       select: ['value'],
       where: { post, user: res.locals.user },
@@ -86,9 +99,20 @@ export class PostResolver {
     return vote ? vote.value : null;
   }
 
-  @Query(() => [Post])
-  getPosts(): Promise<Post[]> {
-    return Post.find({ order: { createdAt: 'DESC' } });
+  @Query(() => PaginatedPost)
+  async getPosts(
+    @Arg('limit', () => Int) limit: number,
+    @Arg('offset', () => Int) offset: number
+  ): Promise<PaginatedPost> {
+    const posts = await Post.find({
+      skip: offset,
+      take: limit + 1,
+      order: { createdAt: 'DESC' },
+    });
+    return {
+      hasMore: posts.length === limit + 1,
+      posts: posts.slice(0, limit + 1),
+    };
   }
 
   @Query(() => Post, { nullable: true })

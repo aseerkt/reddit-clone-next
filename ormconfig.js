@@ -1,5 +1,10 @@
+const dotenv = require('dotenv-safe');
+
+dotenv.config();
+
 module.exports = {
   type: 'postgres',
+  url: process.env.DATABASE_URL ?? process.env.DATABASE_URL,
   host: 'localhost',
   port: 5432,
   username: 'postgres',
