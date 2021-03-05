@@ -2,10 +2,8 @@ import { useApolloClient } from '@apollo/client';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import React, { createRef, useEffect, useState } from 'react';
 import AddPost from '../../../components/AddPost';
-import Button from '../../../components/Button';
 import Sidebar from '../../../components/Sidebar';
 import SubDropdown from '../../../components/SubDropdown';
 import {
@@ -16,16 +14,12 @@ import {
   SearchSubDocument,
   SearchSubQuery,
   Sub,
-  useCreatePostMutation,
-  useGetSubQuery,
 } from '../../../generated/graphql';
 import { createApolloClient } from '../../../utils/createApolloClient';
 
 const SubmitPostToSub: NextPage<{ sub: Sub }> = ({ sub }) => {
   // useIsAuth(true);
   const client = useApolloClient();
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
   const [term, setTerm] = useState('');
   const [subs, setSubs] = useState([]);
   // const router = useRouter();

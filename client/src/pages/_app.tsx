@@ -6,7 +6,6 @@ import { ApolloProvider } from '@apollo/client';
 import Navbar from '../components/Navbar';
 import { useRouter } from 'next/dist/client/router';
 import { createApolloClient } from '../utils/createApolloClient';
-import useIsAuth from '../components/useIsAuth';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();

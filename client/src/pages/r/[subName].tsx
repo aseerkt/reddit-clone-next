@@ -2,9 +2,8 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import PostCard from '../../components/PostCard';
 import SubImageHeader from '../../components/SubImageHeader';
-import { Post, Sub, useGetSubQuery, useMeQuery } from '../../generated/graphql';
+import { Post, Sub, useGetSubQuery } from '../../generated/graphql';
 import Sidebar from '../../components/Sidebar';
-import { GetServerSideProps } from 'next';
 import CreatePostButton from '../../components/CreatePostButton';
 
 const SubPage = () => {

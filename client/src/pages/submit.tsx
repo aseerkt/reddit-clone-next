@@ -2,7 +2,6 @@ import { useApolloClient } from '@apollo/client';
 import Head from 'next/head';
 import React, { createRef, useEffect, useState } from 'react';
 import AddPost from '../components/AddPost';
-import Button from '../components/Button';
 import SubDropdown from '../components/SubDropdown';
 import { SearchSubDocument, SearchSubQuery } from '../generated/graphql';
 

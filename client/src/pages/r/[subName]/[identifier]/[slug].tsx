@@ -9,7 +9,6 @@ import Comments from '../../../../components/Comments';
 import Sidebar from '../../../../components/Sidebar';
 import VoteSection from '../../../../components/VoteSection';
 import {
-  Comment,
   Sub,
   useGetPostQuery,
   useGetSubQuery,
