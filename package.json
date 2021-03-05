@@ -29,7 +29,9 @@
       "reflect-metadata": "^0.1.13",
       "type-graphql": "^1.1.1",
       "typeorm": "0.2.31",
-      "typeorm-seeding": "^1.6.1"
+      "typeorm-seeding": "^1.6.1",
+      "typescript": "4.1.5"
+      "@types/node": "^14.14.28" 
    },
    "resolutions": {
       "graphql-upload": "11.0.0",
@@ -44,7 +46,7 @@
       "seed": "tsc && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
       "start-ts-node": "ts-node src/index.ts",
       "gen-env": "npx gen-env-types .env -o src/env.d.ts -e .",
-      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false cd client && yarn && yarn build"
+      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npx tsc && cd client && yarn && yarn build"
    },
    "license": "MIT"
 }
