@@ -8,6 +8,7 @@ temp/
 .env
 dist/
 src/migrations/
+public/images/*
 
 # debug
 npm-debug.log*
