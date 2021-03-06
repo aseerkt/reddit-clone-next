@@ -11,7 +11,7 @@ const FormWrapper: React.FC<{ title: string }> = ({ title, children }) => {
 
       <div className='relative h-screen w-36'>
         <Image
-          src='/images/pexels-fiona-art.jpg'
+          src='https://images.pexels.com/photos/5104647/pexels-photo-5104647.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
           layout='fill'
           objectFit='cover'
         />
