@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
           'bg-transparent border-blue-500 text-blue-500 hover:bg-gray-50':
             variant === 'outlined',
           'w-full': fullWidth,
-          uppercase,
+          uppercase: uppercase,
           'opacity-50 cursor-not-allowed': isLoading,
         }
       )}

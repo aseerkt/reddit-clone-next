@@ -4,7 +4,7 @@ import { AppProps } from 'next/app';
 import { ApolloProvider } from '@apollo/client';
 
 import Navbar from '../components/Navbar';
-import { useRouter } from 'next/dist/client/router';
+import { useRouter } from 'next/router';
 import { createApolloClient } from '../utils/createApolloClient';
 
 function MyApp({ Component, pageProps }: AppProps) {
