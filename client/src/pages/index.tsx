@@ -7,6 +7,9 @@ import { Waypoint } from 'react-waypoint';
 import SpinnerSvg from '../components/SpinnerSvg';
 
 export default function Home() {
+  const title = 'lireadit';
+  const description =
+    "Reddit is a network of communities based on people's interests. Find communities you're interested in, and become part of an online community!";
   const {
     data,
     loading,
@@ -43,6 +46,11 @@ export default function Home() {
     <>
       <Head>
         <title>lireadit: the fake page of the internet</title>
+        <meta name='description' content={description} />
+        <meta property='og:title' content={title} />
+        <meta property='og:description' content={description} />
+        <meta property='twitter:title' content={title} />
+        <meta property='twitter:description' content={description} />
       </Head>
       <div className='container flex pt-4'>
         {/* Post Feed */}

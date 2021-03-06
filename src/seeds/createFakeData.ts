@@ -8,7 +8,7 @@ import postData from './postData.json';
 import { makeId, slugify } from '../utils/postHelper';
 import { Sub } from '../entities/Sub';
 import { Post } from '../entities/Post';
-import fs from 'fs';
+import fs, { existsSync } from 'fs';
 import path from 'path';
 
 // function timePlus(duration = 0) {
@@ -36,15 +36,17 @@ export default class CreateFakeData implements Seeder {
 
     const directory = 'public/images/';
 
-    fs.readdir(directory, (err, files) => {
-      if (err) throw err;
+    if (existsSync(directory)) {
+      fs.readdir(directory, (err, files) => {
+        if (err) throw err;
 
-      for (const file of files) {
-        fs.unlink(path.join(directory, file), (err) => {
-          if (err) throw err;
-        });
-      }
-    });
+        for (const file of files) {
+          fs.unlink(path.join(directory, file), (err) => {
+            if (err) throw err;
+          });
+        }
+      });
+    }
 
     await connection
       .createQueryBuilder()

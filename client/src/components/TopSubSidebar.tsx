@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useGetTopSubQuery } from '../generated/graphql';
+import { useGetTopSubQuery, useMeQuery } from '../generated/graphql';
 import Button from './Button';
 
 const TopSubSidebar = () => {
   const { data } = useGetTopSubQuery();
   const router = useRouter();
+  const { data: meData } = useMeQuery();
 
   return (
     <div className='flex-1 hidden ml-6 md:block'>
@@ -43,9 +44,11 @@ const TopSubSidebar = () => {
             ))}
         </div>
         <div className='px-4 py-2'>
-          <Button onClick={() => router.push('/create-post')} fullWidth>
-            Create Community
-          </Button>
+          {meData && meData.me && (
+            <Button onClick={() => router.push('/create-sub')} fullWidth>
+              Create Community
+            </Button>
+          )}
         </div>
       </div>
     </div>

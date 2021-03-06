@@ -1,4 +1,5 @@
 import { Formik, Form } from 'formik';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -9,12 +10,14 @@ import {
   useLoginMutation,
   MeDocument,
   useCreateSubMutation,
+  MeQuery,
 } from '../generated/graphql';
+import { createApolloClient } from '../utils/createApolloClient';
 import { getErrorMap } from '../utils/getErrorMap';
 
 const CreateSub = () => {
   const router = useRouter();
-  const { next }: any = router.query;
+  // const { next }: any = router.query;
   const [createSub, { loading }] = useCreateSubMutation();
   return (
     <FormWrapper title='Create Community'>
@@ -81,6 +84,30 @@ const CreateSub = () => {
       </small> */}
     </FormWrapper>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  try {
+    const cookie = req.headers.cookie;
+    if (!cookie) throw new Error('No cookie in headers');
+    const res = await createApolloClient().query<MeQuery>({
+      query: MeDocument,
+      context: {
+        headers: { cookie },
+      },
+    });
+    const user = res.data.me;
+    if (!user) throw new Error('User not logged in');
+    return { props: {} };
+  } catch (err) {
+    console.log(err);
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
 };
 
 export default CreateSub;

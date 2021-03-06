@@ -1,7 +1,7 @@
-import path from 'path';
+// import path from 'path';
 import 'reflect-metadata';
 import 'colors';
-import 'dotenv-safe/config';
+import 'dotenv/config';
 import { createConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
@@ -28,13 +28,13 @@ const main = async () => {
   app.get('/', (_, res) => res.send('Reddit Clone Backend API'));
   app.use('/', express.static('public'));
 
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/build'));
+  // if (process.env.NODE_ENV === 'production') {
+  //   app.use(express.static('client/build'));
 
-    app.get('*', (_req, res) => {
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    });
-  }
+  //   app.get('*', (_req, res) => {
+  //     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  //   });
+  // }
 
   app.use(
     '/graphql',

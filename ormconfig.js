@@ -1,4 +1,4 @@
-const dotenv = require('dotenv-safe');
+const dotenv = require('dotenv');
 
 dotenv.config();
 const rootDir = process.env.NODE_ENV === 'production' ? 'src/' : 'dist/';
