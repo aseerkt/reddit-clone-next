@@ -1,16 +1,13 @@
-const dotenv = require('dotenv');
-
-dotenv.config();
-const rootDir = process.env.NODE_ENV === 'production' ? 'src/' : 'dist/';
+// require('dotenv').config();
+const rootDir = 'dist/';
 
 module.exports = {
-  type: 'postgres',
-  url: process.env.DATABASE_URL ?? process.env.DATABASE_URL,
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'postgres',
-  database: 'cl-reddit',
+  type: process.env.DB_DIALECT,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   synchronize: false,
   logging: true,
   entities: [rootDir + 'entities/**/*.js'],

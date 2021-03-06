@@ -1,7 +1,7 @@
 // import path from 'path';
 import 'reflect-metadata';
 import 'colors';
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { createConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
@@ -12,6 +12,8 @@ import { graphqlUploadExpress } from 'graphql-upload';
 import { PORT } from './constants';
 import { createUserLoader } from './utils/createUserLoader';
 import { createSubLoader } from './utils/createSubLoader';
+
+dotenv.config();
 
 const main = async () => {
   await createConnection();
