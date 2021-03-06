@@ -1,0 +1,26 @@
+name: Pull code, rebuild files and restart pm2 processes
+
+on:
+  push:
+   branches: [master]
+
+jobs:
+  update:
+   runs-on: ubuntu-latest
+   steps:
+     - name: rebuild server
+       uses: garygrossgarten/github-action-ssh@release
+       with:
+        command: |
+          cd lireadit.com
+          git pull
+          yarn
+          npx tsc
+          cd client
+          yarn
+          yarn build
+          pm2 restart server client
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        privateKey: ${{ secrets.PRIVATE_KEY}}
