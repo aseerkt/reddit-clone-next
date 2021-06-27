@@ -5,7 +5,8 @@
 ### Roadmap
 
 - [x] User SignUp and JWT Authentication
-- [x] Add post
+- [x] Create Community
+- [x] Add post to community
 - [x] Upvote and downvote post
 
 ### Credits

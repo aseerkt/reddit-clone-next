@@ -6,7 +6,7 @@ import {
   SearchSubDocument,
   SearchSubQuery,
 } from '../generated/graphql';
-import Button from './Button';
+import Button from '../shared/Button';
 import { useApolloClient } from '@apollo/client';
 import { useRouter } from 'next/router';
 import SubDropdown from './SubDropdown';

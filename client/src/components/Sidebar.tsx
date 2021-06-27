@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { Sub, useMeQuery } from '../generated/graphql';
-import Button from './Button';
+import Button from '../shared/Button';
 
 const Sidebar: React.FC<{ sub: Sub }> = ({ sub }) => {
   const router = useRouter();

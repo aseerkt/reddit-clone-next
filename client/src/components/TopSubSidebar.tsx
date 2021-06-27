@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useGetTopSubQuery, useMeQuery } from '../generated/graphql';
-import Button from './Button';
+import Button from '../shared/Button';
 
 const TopSubSidebar = () => {
   const { data } = useGetTopSubQuery();

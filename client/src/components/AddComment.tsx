@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useCommentPostMutation, useMeQuery } from '../generated/graphql';
-import Button from './Button';
+import Button from '../shared/Button';
 
 const AddComment: React.FC<{ postId: string }> = ({ postId }) => {
   const [text, setText] = useState('');

@@ -1,13 +1,12 @@
-import Head from 'next/head';
 import React from 'react';
 import Link from 'next/link';
 import { Formik, Form } from 'formik';
-import InputField from '../components/InputField';
+import InputField from '../shared/InputField';
 import { useRegisterMutation } from '../generated/graphql';
 import { getErrorMap } from '../utils/getErrorMap';
 import { useRouter } from 'next/dist/client/router';
 import FormWrapper from '../components/FormWrapper';
-import Button from '../components/Button';
+import Button from '../shared/Button';
 
 function Register() {
   const [register] = useRegisterMutation();

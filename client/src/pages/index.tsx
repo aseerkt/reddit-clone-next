@@ -4,23 +4,17 @@ import PostCard from '../components/PostCard';
 import TopSubSidebar from '../components/TopSubSidebar';
 import CreatePostButton from '../components/CreatePostButton';
 import { Waypoint } from 'react-waypoint';
-import SpinnerSvg from '../components/SpinnerSvg';
+import SpinnerSvg from '../shared/SpinnerSvg';
 
 export default function Home() {
   const title = 'lireadit';
   const description =
     "Reddit is a network of communities based on people's interests. Find communities you're interested in, and become part of an online community!";
-  const {
-    data,
-    loading,
-    fetchMore,
-    error,
-    variables,
-    networkStatus,
-  } = useGetPostsQuery({
-    variables: { limit: 8, offset: 0 },
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, fetchMore, error, variables, networkStatus } =
+    useGetPostsQuery({
+      variables: { limit: 8, offset: 0 },
+      notifyOnNetworkStatusChange: true,
+    });
   console.log(networkStatus);
   if (loading) {
     <div className='container h-full pt-4 text-center'>

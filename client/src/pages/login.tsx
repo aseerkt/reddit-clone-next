@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import FormWrapper from '../components/FormWrapper';
-import InputField from '../components/InputField';
+import InputField from '../shared/InputField';
 import { Formik, Form } from 'formik';
 import { useRouter } from 'next/dist/client/router';
 import { MeDocument, useLoginMutation } from '../generated/graphql';
-import Button from '../components/Button';
+import Button from '../shared/Button';
 
 const Login = () => {
   const router = useRouter();
