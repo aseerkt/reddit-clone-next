@@ -2,7 +2,13 @@
 
 > Reddit Clone with minimalist feature
 
+### Roadmap
+
+- [x] User SignUp and JWT Authentication
+- [x] Add post
+- [x] Upvote and downvote post
+
 ### Credits
 
-- [hidjou](https://github.com/hidjou) - repo <[hidjou/classsed-reddit-clone](https://github.com/hidjou/classsed-reddit-clone)>
+- [hidjou](https://github.com/hidjou)
 - [benawad](https://github.com/benawad)

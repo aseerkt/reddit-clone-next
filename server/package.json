@@ -40,12 +40,10 @@
       "watch": "tsc -w",
       "start": "node dist/index.js",
       "server": "nodemon dist/index.js",
-      "dev": "concurrently \"tsc -w\" \"yarn server\" ",
+      "dev": "tsc && concurrently -n TSC,SERVER -c blue.bold,yellow.bold \"tsc -w\" \"yarn server\" ",
       "typeorm": "ts-node ./node_modules/typeorm/cli.js",
       "seed": "tsc && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-      "start-ts-node": "ts-node src/index.ts",
-      "gen-env": "npx gen-env-types .env -o src/env.d.ts -e .",
-      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false cd client && yarn && yarn build"
+      "gen-env": "npx gen-env-types .env -o src/env.d.ts -e ."
    },
    "license": "MIT"
 }
