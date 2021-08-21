@@ -42,7 +42,7 @@ const SubPage = () => {
   return (
     <>
       <Head>
-        <title>{sub && sub.title}</title>
+        <title>{sub?.title}</title>
       </Head>
       {sub && <SubImageHeader sub={sub} />}
       <div className='container flex pt-5'>
