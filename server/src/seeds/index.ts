@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createConnection, getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import argon2 from 'argon2';
@@ -10,12 +11,6 @@ import { Post } from '../entities/Post';
 
 console.log(process.env.argv);
 
-let hashedUserData: any[] = [];
-
-userData.forEach(async (user) => {
-  hashedUserData.push({ ...user, password: await argon2.hash('bob123') });
-});
-
 const sluggedPostData = postData.map((p) => ({
   ...p,
   slug: slugify(p.title),
@@ -27,6 +22,13 @@ async function createFakeData() {
   const connection = getConnection();
   await connection.dropDatabase();
   await connection.synchronize();
+
+  const hashedPassword = await argon2.hash(process.env.SEED_PASSWORD!);
+
+  const hashedUserData = userData.map((u) => ({
+    ...u,
+    password: hashedPassword,
+  }));
 
   await connection
     .createQueryBuilder()
