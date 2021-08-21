@@ -6,10 +6,11 @@ import CreatePostButton from '../components/CreatePostButton';
 import { Waypoint } from 'react-waypoint';
 import SpinnerSvg from '../shared/SpinnerSvg';
 
+const title = 'lireadit';
+const description =
+  "Reddit is a network of communities based on people's interests. Find communities you're interested in, and become part of an online community!";
+
 export default function Home() {
-  const title = 'lireadit';
-  const description =
-    "Reddit is a network of communities based on people's interests. Find communities you're interested in, and become part of an online community!";
   const { data, loading, fetchMore, error, variables, networkStatus } =
     useGetPostsQuery({
       variables: { limit: 8, offset: 0 },
