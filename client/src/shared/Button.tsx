@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
       disabled={isLoading || disabled}
       className={cn(
-        'inline-block py-2 mt-3 mb-4 text-sm border outline-none focus:outline-none font-bold rounded-full disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-block py-2 text-sm border outline-none focus:outline-none font-bold rounded-full disabled:opacity-50 disabled:cursor-not-allowed',
         className,
         {
           'bg-blue-500 border-blue-500 text-white hover:bg-blue-400 hover:border-blue-400':
