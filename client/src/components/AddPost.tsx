@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useCreatePostMutation } from '../generated/graphql';
-import Button from './Button';
+import Button from '../shared/Button';
 
 const AddPost: React.FC<{ subName: string }> = ({ subName }) => {
   const [title, setTitle] = useState('');

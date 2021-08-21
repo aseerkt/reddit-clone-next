@@ -2,18 +2,14 @@ import { validate } from 'class-validator';
 import {
   Arg,
   Args,
-  ArgsType,
   Ctx,
-  Field,
   FieldResolver,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
   UseMiddleware,
 } from 'type-graphql';
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { getConnection, getRepository } from 'typeorm';
 import { Post } from '../entities/Post';
 import { Sub } from '../entities/Sub';
@@ -25,46 +21,9 @@ import { AuthenticationError } from 'apollo-server-express';
 import { uploadFile } from '../utils/uploadFile';
 import { unlinkSync } from 'fs';
 import { SUB_DEFAULT_IMAGE_URL } from '../constants';
+import { AddSubImageResponse, AddSubImageArgs, TopSub, CreateSubArgs } from '../types/SubTypes';
 
-@ArgsType()
-class CreateSubArgs {
-  @Field()
-  name: string;
-  @Field()
-  title: string;
-  @Field({ nullable: true })
-  description?: string;
-}
 
-@ArgsType()
-class AddSubImageArgs {
-  @Field(() => GraphQLUpload)
-  file: FileUpload;
-  @Field()
-  type: 'banner' | 'image';
-  @Field()
-  subName: string;
-}
-
-@ObjectType()
-class AddSubImageResponse {
-  @Field()
-  type: 'banner' | 'image';
-  @Field()
-  Urn: string;
-}
-
-@ObjectType()
-class TopSub {
-  @Field()
-  name: string;
-  @Field()
-  title: string;
-  @Field()
-  imageUrl: string;
-  @Field()
-  postCount: string;
-}
 
 @Resolver(Sub)
 export class SubResolver {
@@ -147,6 +106,7 @@ export class SubResolver {
       })
       .getMany();
   }
+
   @Mutation(() => DefaultResponse)
   @UseMiddleware(isAuth)
   async createSub(

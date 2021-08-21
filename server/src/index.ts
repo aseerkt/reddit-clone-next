@@ -1,4 +1,3 @@
-// import path from 'path';
 import 'reflect-metadata';
 import 'colors';
 import dotenv from 'dotenv';
@@ -28,15 +27,6 @@ const main = async () => {
   );
   app.use(cookieParser());
   app.get('/', (_, res) => res.send('Reddit Clone Backend API'));
-  app.use('/', express.static('public'));
-
-  // if (process.env.NODE_ENV === 'production') {
-  //   app.use(express.static('client/build'));
-
-  //   app.get('*', (_req, res) => {
-  //     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  //   });
-  // }
 
   app.use(
     '/graphql',
@@ -49,6 +39,7 @@ const main = async () => {
     }),
     uploads: false,
     context: ({ req, res, connection }) => {
+      // trimming variables
       const exceptions = ['password'];
       if (connection?.variables) {
         let newVariables: Record<string, any> = {};
@@ -58,7 +49,7 @@ const main = async () => {
           }
         });
         connection.variables = newVariables;
-        console.log('connection variables', connection.variables);
+        // console.log('connection variables', connection.variables);
       }
       return {
         req,
