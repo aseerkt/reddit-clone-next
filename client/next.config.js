@@ -11,6 +11,10 @@ module.exports = {
     return config;
   },
   images: {
-    domains: ['www.gravatar.com', 'images.pexels.com', process.env.APP_DOMAIN],
+    domains: [
+      'www.gravatar.com',
+      'images.pexels.com',
+      String(process.env.APP_DOMAIN),
+    ],
   },
 };
