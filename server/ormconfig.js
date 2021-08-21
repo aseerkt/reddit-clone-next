@@ -1,14 +1,16 @@
-// require('dotenv').config();
+require('dotenv').config();
 const rootDir = 'dist/';
+const __prod__ = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  type: process.env.DB_DIALECT,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  synchronize: false,
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  ssl: __prod__
+    ? {
+        rejectUnauthorized: false,
+      }
+    : false,
+  synchronize: __prod__,
   logging: true,
   entities: [rootDir + 'entities/**/*.js'],
   migrations: [rootDir + 'migrations/**/*.js'],
