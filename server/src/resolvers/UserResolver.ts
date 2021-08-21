@@ -13,11 +13,10 @@ import {
 } from 'type-graphql';
 import { User } from '../entities/User';
 import { FieldError, MyContext } from '../types';
-import { setTokenToCookie } from '../utils/cookieHandler';
+import { clearTokenCookie, setTokenToCookie } from '../utils/cookieHandler';
 import { extractErrors } from '../utils/extractErrors';
 import { createToken } from '../utils/tokenHandler';
 import { isUser } from '../middlewares/isUser';
-import { COOKIE_NAME } from '../constants';
 
 @ArgsType()
 class RegisterArgs {
@@ -127,7 +126,7 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   logout(@Ctx() { res }: MyContext): boolean {
-    res.clearCookie(COOKIE_NAME);
+    clearTokenCookie(res);
     res.locals.user = null as any;
     return true;
   }
