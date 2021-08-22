@@ -1,38 +1,17 @@
-import { useApolloClient } from '@apollo/client';
 import Head from 'next/head';
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef } from 'react';
 import AddPost from '../components/AddPost';
 import SubDropdown from '../components/SubDropdown';
-import { SearchSubDocument, SearchSubQuery } from '../generated/graphql';
+import useIsAuth from '../utils/useIsAuth';
+import useSearchSubs from '../utils/useSearchSubs';
 
 const SubmitPost = () => {
-  const [term, setTerm] = useState('');
-  const [subs, setSubs] = useState([]);
-  const client = useApolloClient();
+  const { loading } = useIsAuth();
+
+  const { term, setTerm, subs, emptyResults } = useSearchSubs();
   const inputRef = createRef<HTMLInputElement>();
 
-  useEffect(() => {
-    if (term.length === 0) {
-      setSubs([]);
-    }
-    searchSubs();
-  }, [term]);
-
-  const searchSubs = async () => {
-    if (term.length === 0) return;
-    try {
-      const res = await client.query<SearchSubQuery>({
-        query: SearchSubDocument,
-        variables: { term },
-      });
-      const subsData = res.data.searchSub;
-      if (subsData) {
-        setSubs(subsData);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  if (loading) return null;
 
   return (
     <>
@@ -49,12 +28,7 @@ const SubmitPost = () => {
             </h2>
           </div>
           <div
-            onBlur={() => {
-              setTimeout(() => {
-                setSubs([]);
-              }, 500);
-              // setTerm('');
-            }}
+            onBlur={emptyResults}
             className='relative inline-block p-2 mt-4 bg-white rounded '
           >
             <div className='flex items-center p-2 text-sm text-gray-700 border rounded outline-none hover:border-2 focus:border-2'>

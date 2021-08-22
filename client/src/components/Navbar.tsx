@@ -11,39 +11,16 @@ import { useApolloClient } from '@apollo/client';
 import { useRouter } from 'next/router';
 import SubDropdown from './SubDropdown';
 import Image from 'next/image';
+import useSearchSubs from '../utils/useSearchSubs';
 
 const Navbar = () => {
   const { data, loading } = useMeQuery();
   const client = useApolloClient();
   const [logout] = useLogoutMutation();
   const router = useRouter();
-  const [term, setTerm] = useState('');
-  const [subs, setSubs] = useState([]);
+  const { term, setTerm, subs, emptyResults } = useSearchSubs();
 
   let body = null;
-
-  useEffect(() => {
-    if (term.length === 0) {
-      setSubs([]);
-    }
-    searchSubs();
-  }, [term]);
-
-  const searchSubs = async () => {
-    if (term.length === 0) return;
-    try {
-      const res = await client.query<SearchSubQuery>({
-        query: SearchSubDocument,
-        variables: { term },
-      });
-      const subsData = res.data.searchSub;
-      if (subsData) {
-        setSubs(subsData);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   if (loading) {
   } else if (data && !data.me) {
@@ -105,12 +82,7 @@ const Navbar = () => {
       {/* Search Input */}
       <div className='max-w-full px-4 w-160'>
         <div
-          onBlur={() => {
-            setTimeout(() => {
-              setSubs([]);
-            }, 500);
-            // setTerm('');
-          }}
+          onBlur={emptyResults}
           className='relative flex items-center bg-gray-100 border rounded hover:border-blue-500 hover:bg-white'
         >
           <i className='pl-4 pr-3 text-gray-500 fas fa-search'></i>

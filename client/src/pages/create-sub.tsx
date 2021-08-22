@@ -1,22 +1,21 @@
 import { Formik, Form } from 'formik';
-import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Button from '../shared/Button';
 import FormWrapper from '../components/FormWrapper';
 import InputField from '../shared/InputField';
-import {
-  MeDocument,
-  useCreateSubMutation,
-  MeQuery,
-} from '../generated/graphql';
-import { createApolloClient } from '../utils/createApolloClient';
+import { useCreateSubMutation } from '../generated/graphql';
 import { getErrorMap } from '../utils/getErrorMap';
+import useIsAuth from '../utils/useIsAuth';
 
 const CreateSub = () => {
+  const { loading: userLoading } = useIsAuth();
   const router = useRouter();
   // const { next }: any = router.query;
   const [createSub, { loading }] = useCreateSubMutation();
+
+  if (userLoading) return null;
+
   return (
     <FormWrapper title='Create Community'>
       <Formik
@@ -82,30 +81,6 @@ const CreateSub = () => {
       </small> */}
     </FormWrapper>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  try {
-    const cookie = req.headers.cookie;
-    if (!cookie) throw new Error('No cookie in headers');
-    const res = await createApolloClient().query<MeQuery>({
-      query: MeDocument,
-      context: {
-        headers: { cookie },
-      },
-    });
-    const user = res.data.me;
-    if (!user) throw new Error('User not logged in');
-    return { props: {} };
-  } catch (err) {
-    console.log(err);
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
 };
 
 export default CreateSub;
