@@ -21,9 +21,12 @@ import { AuthenticationError } from 'apollo-server-express';
 import { uploadFile } from '../utils/uploadFile';
 import { unlinkSync } from 'fs';
 import { SUB_DEFAULT_IMAGE_URL } from '../constants';
-import { AddSubImageResponse, AddSubImageArgs, TopSub, CreateSubArgs } from '../types/SubTypes';
-
-
+import {
+  AddSubImageResponse,
+  AddSubImageArgs,
+  TopSub,
+  CreateSubArgs,
+} from '../types/SubTypes';
 
 @Resolver(Sub)
 export class SubResolver {
@@ -98,8 +101,9 @@ export class SubResolver {
   }
 
   @Query(() => [Sub])
-  async searchSub(@Arg('term') term: string) {
-    return await getConnection()
+  searchSub(@Arg('term') term: string) {
+    if (!term) return [];
+    return getConnection()
       .createQueryBuilder(Sub, 'sub')
       .where('lower(sub.name) LIKE :term', {
         term: `${term.toLowerCase().trim()}%`,
