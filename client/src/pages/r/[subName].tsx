@@ -14,7 +14,7 @@ const SubPage = () => {
     variables: { subName },
     skip: typeof subName !== 'string',
     onCompleted: (data) => {
-      if (!data || !data.getSub) {
+      if (!data?.getSub) {
         router.push('/');
       }
     },
@@ -22,20 +22,17 @@ const SubPage = () => {
 
   let postsMarkup: JSX.Element | JSX.Element[];
   let sub: Sub | null = null;
-  let posts: Post[] = [];
 
   if (loading) {
     postsMarkup = <p className='text-lg text-center'>Loading...</p>;
-  } else if (data && data.getSub) {
+  } else if (data?.getSub) {
     sub = data.getSub as Sub;
-    posts = data.getSub.posts as Post[];
+    let posts = data.getSub?.posts as Post[];
     postsMarkup =
-      data.getSub.posts.length === 0 ? (
+      posts.length === 0 ? (
         <p className='mt-4 text-lg text-center'>No posts added yet.</p>
       ) : (
-        data.getSub.posts.map((post) => (
-          <PostCard key={post.id} post={post as Post} />
-        ))
+        posts.map((post) => <PostCard key={post.id} post={post as Post} />)
       );
   }
 
