@@ -38,7 +38,7 @@ export const cache = new InMemoryCache({
 
 export function createApolloClient() {
   return new ApolloClient({
-    link: ApolloLink.from([errorLink, httpLink]),
+    link: ApolloLink.from([errorLink, httpLink as any]),
     cache,
   });
 }
