@@ -1,13 +1,15 @@
 import {
+  CreatePostArgs,
+  FetchPostArgs,
+  PaginatedPost,
+} from '../types/PostTypes';
+import {
   Arg,
   Args,
-  ArgsType,
   Ctx,
-  Field,
   FieldResolver,
   Int,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -21,32 +23,6 @@ import { Vote } from '../entities/Vote';
 import { isAuth } from '../middlewares/isAuth';
 import { isUser } from '../middlewares/isUser';
 import { DefaultResponse, MyContext } from '../types';
-
-@ArgsType()
-class CreatePostArgs {
-  @Field()
-  title!: string;
-  @Field({ nullable: true })
-  body?: string;
-  @Field()
-  subName: string;
-}
-
-@ArgsType()
-export class FetchPostArgs {
-  @Field()
-  identifier: string;
-  @Field()
-  slug: string;
-}
-
-@ObjectType()
-class PaginatedPost {
-  @Field()
-  hasMore: boolean;
-  @Field(() => [Post])
-  posts: Post[];
-}
 
 @Resolver(Post)
 export class PostResolver {

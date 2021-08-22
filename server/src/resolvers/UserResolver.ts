@@ -2,7 +2,6 @@ import { isEmpty, validate } from 'class-validator';
 import {
   Arg,
   Args,
-  ArgsType,
   Ctx,
   Field,
   Mutation,
@@ -17,18 +16,8 @@ import { clearTokenCookie, setTokenToCookie } from '../utils/cookieHandler';
 import { extractErrors } from '../utils/extractErrors';
 import { createToken } from '../utils/tokenHandler';
 import { isUser } from '../middlewares/isUser';
+import { RegisterArgs } from '../types/UserTypes';
 
-@ArgsType()
-class RegisterArgs {
-  @Field()
-  email: string;
-
-  @Field()
-  username: string;
-
-  @Field()
-  password: string;
-}
 @ObjectType()
 class UserResponse {
   @Field(() => User, { nullable: true })
