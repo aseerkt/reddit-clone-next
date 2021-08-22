@@ -37,20 +37,19 @@ const main = async () => {
     schema: await buildSchema({
       resolvers: [__dirname + '/resolvers/**/*.{ts,js}'],
     }),
-    uploads: false,
-    context: ({ req, res, connection }) => {
+    context: ({ req, res }) => {
       // trimming variables
-      const exceptions = ['password'];
-      if (connection?.variables) {
-        let newVariables: Record<string, any> = {};
-        Object.entries(connection.variables).forEach(([key, value]) => {
-          if (exceptions.includes(key) && typeof value === 'string') {
-            newVariables[key] = value.trim();
-          }
-        });
-        connection.variables = newVariables;
-        // console.log('connection variables', connection.variables);
-      }
+      // const exceptions = ['password'];
+      // if (connection?.variables) {
+      //   let newVariables: Record<string, any> = {};
+      //   Object.entries(connection.variables).forEach(([key, value]) => {
+      //     if (exceptions.includes(key) && typeof value === 'string') {
+      //       newVariables[key] = value.trim();
+      //     }
+      //   });
+      //   connection.variables = newVariables;
+      //   // console.log('connection variables', connection.variables);
+      // }
       return {
         req,
         res,
@@ -59,6 +58,8 @@ const main = async () => {
       };
     },
   });
+
+  await apolloServer.start();
 
   apolloServer.applyMiddleware({ app, cors: false });
 
